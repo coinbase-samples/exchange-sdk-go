@@ -44,7 +44,16 @@ func (s *accountsServiceImpl) GetAccountTransfers(
 
 	response := &GetAccountTransfersResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

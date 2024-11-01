@@ -40,14 +40,23 @@ func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 
 	var queryParams string
 	if len(request.Address) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "address", request.Address)
+		queryParams = core.AppendHttpQueryParam(queryParams, "address", request.Address)
 	}
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	response := &ListTravelRuleInformationResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

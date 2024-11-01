@@ -22,12 +22,12 @@ enabled. Ensure that Exchange API credentials are stored in a secure manner.
 ```
 credentials := &credentials.Credentials{}
 if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), credentials); err != nil {
-    log.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+    panic(fmt.Sprintf("unable to deserialize exchange credentials JSON: %v", err))
 }
 
 httpClient, err := core.DefaultHttpClient()
 if err != nil {
-    log.Fatalf("unable to load default http client: %v", err)
+    panic(fmt.Sprintf("unable to load default http client: %v", err))
 }
 
 client := client.NewRestClient(credentials, httpClient)
@@ -57,13 +57,13 @@ request := &accounts.ListAccountsRequest{}
 
 response, err := accountsSvc.ListAccounts(context.Background(), request)
 if err != nil {
-    log.Fatalf("unable to list accounts: %v", err)
+    panic(fmt.Sprintf("unable to list accounts: %v", err))
 }
 
 // Print the JSON-formatted response
 jsonResponse, err := json.MarshalIndent(response, "", "  ")
 if err != nil {
-    log.Fatalf("error marshaling response to JSON: %v", err)
+    panic(fmt.Sprintf("error marshaling response to JSON: %v", err))
 }
 fmt.Println(string(jsonResponse))
 ```

@@ -40,7 +40,16 @@ func (s *addressBookServiceImpl) DeleteAddress(
 
 	response := &DeleteAddressResponse{}
 
-	if err := core.HttpDelete(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

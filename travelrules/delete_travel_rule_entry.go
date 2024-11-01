@@ -39,7 +39,16 @@ func (s *travelRulesServiceImpl) DeleteTravelRuleEntry(
 
 	response := &DeleteTravelRuleEntryResponse{}
 
-	if err := core.HttpDelete(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

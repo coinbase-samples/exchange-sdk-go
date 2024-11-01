@@ -41,18 +41,27 @@ func (s *wrappedAssetsServiceImpl) ListStakewraps(
 
 	var queryParams string
 	if len(request.From) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "from", request.From)
+		queryParams = core.AppendHttpQueryParam(queryParams, "from", request.From)
 	}
 
 	if len(request.To) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "to", request.To)
+		queryParams = core.AppendHttpQueryParam(queryParams, "to", request.To)
 	}
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	response := &ListStakewrapsResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

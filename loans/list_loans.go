@@ -21,7 +21,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type ListLoansRequest struct {
@@ -39,12 +38,21 @@ func (s *loansServiceImpl) ListLoans(
 
 	var queryParams string
 	if len(request.Ids) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "ids", request.Ids)
+		queryParams = core.AppendHttpQueryParam(queryParams, "ids", request.Ids)
 	}
 
 	response := &ListLoansResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

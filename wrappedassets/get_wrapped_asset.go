@@ -39,7 +39,16 @@ func (s *wrappedAssetsServiceImpl) GetWrappedAsset(
 
 	response := &GetWrappedAssetResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

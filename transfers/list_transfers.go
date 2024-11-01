@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type ListTransfersRequest struct {
@@ -47,33 +46,42 @@ func (s *transfersServiceImpl) ListTransfers(
 
 	var queryParams string
 	if len(request.ProfileId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "profile_id", request.ProfileId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 	if len(request.Before) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "before", request.Before)
+		queryParams = core.AppendHttpQueryParam(queryParams, "before", request.Before)
 	}
 	if len(request.After) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "after", request.After)
+		queryParams = core.AppendHttpQueryParam(queryParams, "after", request.After)
 	}
 	if request.Limit > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "limit", fmt.Sprintf("%d", request.Limit))
+		queryParams = core.AppendHttpQueryParam(queryParams, "limit", fmt.Sprintf("%d", request.Limit))
 	}
 	if len(request.Type) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "type", request.Type)
+		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
 	}
 	if len(request.CurrencyType) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "currency_type", request.CurrencyType)
+		queryParams = core.AppendHttpQueryParam(queryParams, "currency_type", request.CurrencyType)
 	}
 	if len(request.TransferReason) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "transfer_reason", request.TransferReason)
+		queryParams = core.AppendHttpQueryParam(queryParams, "transfer_reason", request.TransferReason)
 	}
 	if len(request.Currency) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "currency", request.Currency)
+		queryParams = core.AppendHttpQueryParam(queryParams, "currency", request.Currency)
 	}
 
 	response := &ListTransfersResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

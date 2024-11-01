@@ -42,22 +42,31 @@ func (s *reportsServiceImpl) ListReports(
 
 	var queryParams string
 	if len(request.ProfileId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "profile_id", request.ProfileId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 
 	if len(request.Type) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "type", request.Type)
+		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
 	}
 
 	if len(request.IgnoreExpired) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "ignore_expired", request.IgnoreExpired)
+		queryParams = core.AppendHttpQueryParam(queryParams, "ignore_expired", request.IgnoreExpired)
 	}
 
 	queryParams = utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
 	response := &ListReportsResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

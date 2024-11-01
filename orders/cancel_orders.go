@@ -21,7 +21,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type CancelOrdersRequest struct {
@@ -40,10 +39,10 @@ func (s *ordersServiceImpl) CancelOrders(
 
 	var queryParams string
 	if len(request.ProfileId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "profile_id", request.ProfileId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 	if len(request.ProductId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "product_id", request.ProductId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "product_id", request.ProductId)
 	}
 
 	response := &CancelOrdersResponse{}

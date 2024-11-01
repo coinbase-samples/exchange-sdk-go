@@ -21,7 +21,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetPrincipalRepaymentPreviewRequest struct {
@@ -41,20 +40,29 @@ func (s *loansServiceImpl) GetPrincipalRepaymentPreview(
 
 	var queryParams string
 	if len(request.LoanId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "loan_id", request.LoanId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "loan_id", request.LoanId)
 	}
 
 	if len(request.Currency) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "currency", request.Currency)
+		queryParams = core.AppendHttpQueryParam(queryParams, "currency", request.Currency)
 	}
 
 	if len(request.NativeAmount) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "native_amount", request.NativeAmount)
+		queryParams = core.AppendHttpQueryParam(queryParams, "native_amount", request.NativeAmount)
 	}
 
 	response := &GetPrincipalRepaymentPreviewResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

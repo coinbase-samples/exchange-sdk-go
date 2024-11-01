@@ -40,7 +40,16 @@ func (s *profilesServiceImpl) RenameProfile(
 
 	response := &RenameProfileResponse{}
 
-	if err := core.HttpPut(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPut(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

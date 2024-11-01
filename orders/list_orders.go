@@ -48,35 +48,44 @@ func (s *ordersServiceImpl) ListOrders(
 
 	var queryParams string
 	if len(request.ProfileId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "profile_id", request.ProfileId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 	if len(request.ProductId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "product_id", request.ProductId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "product_id", request.ProductId)
 	}
 	if len(request.SortedBy) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "sorted_by", request.SortedBy)
+		queryParams = core.AppendHttpQueryParam(queryParams, "sorted_by", request.SortedBy)
 	}
 	if len(request.Sorting) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "sorting", request.Sorting)
+		queryParams = core.AppendHttpQueryParam(queryParams, "sorting", request.Sorting)
 	}
 	if len(request.StartDate) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "start_date", request.StartDate)
+		queryParams = core.AppendHttpQueryParam(queryParams, "start_date", request.StartDate)
 	}
 	if len(request.EndDate) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "end_date", request.EndDate)
+		queryParams = core.AppendHttpQueryParam(queryParams, "end_date", request.EndDate)
 	}
 	if len(request.Status) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "status", strings.Join(request.Status, ","))
+		queryParams = core.AppendHttpQueryParam(queryParams, "status", strings.Join(request.Status, ","))
 	}
 	if len(request.MarketType) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "market_type", request.MarketType)
+		queryParams = core.AppendHttpQueryParam(queryParams, "market_type", request.MarketType)
 	}
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	response := &ListOrdersResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

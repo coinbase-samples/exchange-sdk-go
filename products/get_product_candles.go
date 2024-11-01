@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetProductCandlesRequest struct {
@@ -42,20 +41,29 @@ func (s *productsServiceImpl) GetProductCandles(
 
 	var queryParams string
 	if len(request.Granularity) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "granularity", request.Granularity)
+		queryParams = core.AppendHttpQueryParam(queryParams, "granularity", request.Granularity)
 	}
 
 	if len(request.Start) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "start", request.Start)
+		queryParams = core.AppendHttpQueryParam(queryParams, "start", request.Start)
 	}
 
 	if len(request.End) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "end", request.End)
+		queryParams = core.AppendHttpQueryParam(queryParams, "end", request.End)
 	}
 
 	response := &GetProductCandlesResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

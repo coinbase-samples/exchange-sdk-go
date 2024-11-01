@@ -21,7 +21,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetFeeEstimateForWithdrawalRequest struct {
@@ -41,20 +40,29 @@ func (s *transfersServiceImpl) GetFeeEstimateForWithdrawal(
 
 	var queryParams string
 	if len(request.Currency) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "currency", request.Currency)
+		queryParams = core.AppendHttpQueryParam(queryParams, "currency", request.Currency)
 	}
 
 	if len(request.CryptoAddress) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "crypto_address", request.CryptoAddress)
+		queryParams = core.AppendHttpQueryParam(queryParams, "crypto_address", request.CryptoAddress)
 	}
 
 	if len(request.Network) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "network", request.Network)
+		queryParams = core.AppendHttpQueryParam(queryParams, "network", request.Network)
 	}
 
 	response := &GetFeeEstimateForWithdrawalResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

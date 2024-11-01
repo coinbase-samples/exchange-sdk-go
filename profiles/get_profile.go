@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetProfileRequest struct {
@@ -41,12 +40,21 @@ func (s *profilesServiceImpl) GetProfile(
 
 	var queryParams string
 	if len(request.Active) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "active", request.Active)
+		queryParams = core.AppendHttpQueryParam(queryParams, "active", request.Active)
 	}
 
 	response := &GetProfileResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 

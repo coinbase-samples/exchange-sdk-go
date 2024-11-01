@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetProductBookRequest struct {
@@ -41,12 +40,21 @@ func (s *productsServiceImpl) GetProductBook(
 
 	var queryParams string
 	if len(request.Level) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "level", request.Level)
+		queryParams = core.AppendHttpQueryParam(queryParams, "level", request.Level)
 	}
 
 	response := &GetProductBookResponse{}
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
