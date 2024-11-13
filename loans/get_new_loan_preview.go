@@ -28,7 +28,9 @@ type GetNewLoanPreviewRequest struct {
 	NativeAmount string `json:"native_amount,omitempty"`
 }
 
-type GetNewLoanPreviewResponse model.LoanPreview
+type GetNewLoanPreviewResponse struct {
+	LoanPreview model.LoanPreview `json:"loan_preview"`
+}
 
 func (s *loansServiceImpl) GetNewLoanPreview(
 	ctx context.Context,
@@ -46,7 +48,7 @@ func (s *loansServiceImpl) GetNewLoanPreview(
 		queryParams = core.AppendHttpQueryParam(queryParams, "native_amount", request.NativeAmount)
 	}
 
-	response := &GetNewLoanPreviewResponse{}
+	var loanPreview model.LoanPreview
 
 	if err := core.HttpGet(
 		ctx,
@@ -55,11 +57,11 @@ func (s *loansServiceImpl) GetNewLoanPreview(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&loanPreview,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetNewLoanPreviewResponse{}, nil
 }

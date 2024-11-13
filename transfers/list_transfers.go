@@ -18,24 +18,24 @@ package transfers
 
 import (
 	"context"
-	"fmt"
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
+	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type ListTransfersRequest struct {
-	ProfileId      string `json:"profile_id"`
-	Before         string `json:"before,omitempty"`
-	After          string `json:"after,omitempty"`
-	Limit          int64  `json:"limit,omitempty"`
-	Type           string `json:"type,omitempty"`
-	CurrencyType   string `json:"currency_type,omitempty"`
-	TransferReason string `json:"transfer_reason,omitempty"`
-	Currency       string `json:"currency,omitempty"`
+	ProfileId      string                  `json:"profile_id"`
+	Type           string                  `json:"type,omitempty"`
+	CurrencyType   string                  `json:"currency_type,omitempty"`
+	TransferReason string                  `json:"transfer_reason,omitempty"`
+	Currency       string                  `json:"currency,omitempty"`
+	Pagination     *model.PaginationParams `json:"pagination_params"`
 }
 
-type ListTransfersResponse []*model.CoinbaseWallet
+type ListTransfersResponse struct {
+	CoinbaseWallet []*model.CoinbaseWallet `json:"coinbase_wallet"`
+}
 
 func (s *transfersServiceImpl) ListTransfers(
 	ctx context.Context,
@@ -47,15 +47,6 @@ func (s *transfersServiceImpl) ListTransfers(
 	var queryParams string
 	if len(request.ProfileId) > 0 {
 		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
-	}
-	if len(request.Before) > 0 {
-		queryParams = core.AppendHttpQueryParam(queryParams, "before", request.Before)
-	}
-	if len(request.After) > 0 {
-		queryParams = core.AppendHttpQueryParam(queryParams, "after", request.After)
-	}
-	if request.Limit > 0 {
-		queryParams = core.AppendHttpQueryParam(queryParams, "limit", fmt.Sprintf("%d", request.Limit))
 	}
 	if len(request.Type) > 0 {
 		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
@@ -70,7 +61,9 @@ func (s *transfersServiceImpl) ListTransfers(
 		queryParams = core.AppendHttpQueryParam(queryParams, "currency", request.Currency)
 	}
 
-	response := &ListTransfersResponse{}
+	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
+
+	var coinbaseWallet []*model.CoinbaseWallet
 
 	if err := core.HttpGet(
 		ctx,
@@ -79,11 +72,11 @@ func (s *transfersServiceImpl) ListTransfers(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&coinbaseWallet,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListTransfersResponse{CoinbaseWallet: coinbaseWallet}, nil
 }

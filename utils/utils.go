@@ -21,14 +21,6 @@ import (
 	"github.com/coinbase-samples/exchange-sdk-go/model"
 )
 
-func AppendQueryParam(queryParams, key, value string) string {
-	if queryParams == "" {
-		return "?" + key + "=" + value
-	} else {
-		return queryParams + "&" + key + "=" + value
-	}
-}
-
 func AppendPaginationParams(v string, p *model.PaginationParams) string {
 
 	if p == nil {

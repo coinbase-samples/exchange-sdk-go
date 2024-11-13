@@ -30,7 +30,9 @@ type WithdrawToCoinbaseAccountRequest struct {
 	Currency          string `json:"currency"`
 }
 
-type WithdrawToCoinbaseAccountResponse model.Transaction
+type WithdrawToCoinbaseAccountResponse struct {
+	Transaction model.Transaction `json:"transaction"`
+}
 
 func (s *transfersServiceImpl) WithdrawToCoinbaseAccount(
 	ctx context.Context,
@@ -39,7 +41,7 @@ func (s *transfersServiceImpl) WithdrawToCoinbaseAccount(
 
 	path := "/withdrawals/coinbase-account"
 
-	response := &WithdrawToCoinbaseAccountResponse{}
+	var transaction model.Transaction
 
 	if err := core.HttpPost(
 		ctx,
@@ -48,11 +50,11 @@ func (s *transfersServiceImpl) WithdrawToCoinbaseAccount(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&transaction,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &WithdrawToCoinbaseAccountResponse{Transaction: transaction}, nil
 }

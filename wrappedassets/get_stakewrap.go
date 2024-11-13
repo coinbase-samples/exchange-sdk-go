@@ -28,7 +28,9 @@ type GetStakeWrapRequest struct {
 	StakeWrapId string `json:"stake_wrap_id"`
 }
 
-type GetStakeWrapResponse model.StakeWrap
+type GetStakeWrapResponse struct {
+	Stakewrap model.Stakewrap `json:"stakewrap"`
+}
 
 func (s *wrappedAssetsServiceImpl) GetStakeWrap(
 	ctx context.Context,
@@ -37,7 +39,7 @@ func (s *wrappedAssetsServiceImpl) GetStakeWrap(
 
 	path := fmt.Sprintf("/wrapped-assets/stake-wrap/%s", request.StakeWrapId)
 
-	response := &GetStakeWrapResponse{}
+	var stakewrap model.Stakewrap
 
 	if err := core.HttpGet(
 		ctx,
@@ -46,11 +48,11 @@ func (s *wrappedAssetsServiceImpl) GetStakeWrap(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&stakewrap,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetStakeWrapResponse{Stakewrap: stakewrap}, nil
 }

@@ -30,7 +30,9 @@ type CancelOrderRequest struct {
 	ProductId string `json:"product_id,omitempty"`
 }
 
-type CancelOrderResponse model.Description
+type CancelOrderResponse struct {
+	Description model.Description `json:"description"`
+}
 
 func (s *ordersServiceImpl) CancelOrder(
 	ctx context.Context,
@@ -47,11 +49,20 @@ func (s *ordersServiceImpl) CancelOrder(
 		queryParams = core.AppendHttpQueryParam(queryParams, "product_id", request.ProductId)
 	}
 
-	response := &CancelOrderResponse{}
+	var description model.Description
 
-	if err := core.HttpDelete(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&description,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CancelOrderResponse{Description: description}, nil
 }

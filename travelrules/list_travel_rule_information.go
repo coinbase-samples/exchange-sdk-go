@@ -29,7 +29,9 @@ type ListTravelRuleInformationRequest struct {
 	Pagination *model.PaginationParams `json:"pagination_params,omitempty"`
 }
 
-type ListTravelRuleInformationResponse []*model.TravelRuleResponse
+type ListTravelRuleInformationResponse struct {
+	TravelRuleResponse []*model.TravelRuleResponse `json:"travel_rule_response"`
+}
 
 func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 	ctx context.Context,
@@ -45,7 +47,7 @@ func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	response := &ListTravelRuleInformationResponse{}
+	var travelRuleResponse []*model.TravelRuleResponse
 
 	if err := core.HttpGet(
 		ctx,
@@ -54,11 +56,11 @@ func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&travelRuleResponse,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListTravelRuleInformationResponse{TravelRuleResponse: travelRuleResponse}, nil
 }

@@ -29,7 +29,9 @@ type GetProductBookRequest struct {
 	Level     string `json:"level,omitempty"`
 }
 
-type GetProductBookResponse model.ProductBook
+type GetProductBookResponse struct {
+	ProductBook model.ProductBook `json:"product_book"`
+}
 
 func (s *productsServiceImpl) GetProductBook(
 	ctx context.Context,
@@ -43,7 +45,7 @@ func (s *productsServiceImpl) GetProductBook(
 		queryParams = core.AppendHttpQueryParam(queryParams, "level", request.Level)
 	}
 
-	response := &GetProductBookResponse{}
+	var productBook model.ProductBook
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +54,11 @@ func (s *productsServiceImpl) GetProductBook(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&productBook,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductBookResponse{ProductBook: productBook}, nil
 }

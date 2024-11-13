@@ -33,7 +33,9 @@ type OpenNewLoanRequest struct {
 	ProfileId     string `json:"profile_id"`
 }
 
-type OpenNewLoanResponse model.Loan
+type OpenNewLoanResponse struct {
+	Loan model.Loan `json:"loan"`
+}
 
 func (s *loansServiceImpl) OpenNewLoan(
 	ctx context.Context,
@@ -42,7 +44,7 @@ func (s *loansServiceImpl) OpenNewLoan(
 
 	path := "/loans/open"
 
-	response := &OpenNewLoanResponse{}
+	var loan model.Loan
 
 	if err := core.HttpPost(
 		ctx,
@@ -51,11 +53,11 @@ func (s *loansServiceImpl) OpenNewLoan(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&loan,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &OpenNewLoanResponse{Loan: loan}, nil
 }

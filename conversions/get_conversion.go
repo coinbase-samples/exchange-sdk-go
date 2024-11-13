@@ -29,7 +29,9 @@ type GetConversionRequest struct {
 	ProfileId    string `json:"start_date,omitempty"`
 }
 
-type GetConversionResponse []*model.Conversion
+type GetConversionResponse struct {
+	Conversion []*model.Conversion `json:"conversion"`
+}
 
 func (s *conversionsServiceImpl) GetConversion(
 	ctx context.Context,
@@ -43,7 +45,7 @@ func (s *conversionsServiceImpl) GetConversion(
 		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 
-	response := &GetConversionResponse{}
+	var conversion []*model.Conversion
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +54,11 @@ func (s *conversionsServiceImpl) GetConversion(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&conversion,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetConversionResponse{Conversion: conversion}, nil
 }

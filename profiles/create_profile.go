@@ -27,7 +27,9 @@ type CreateProfileRequest struct {
 	Name string `json:"name"`
 }
 
-type CreateProfileResponse model.Profile
+type CreateProfileResponse struct {
+	Profile model.Profile `json:"profile"`
+}
 
 func (s *profilesServiceImpl) CreateProfile(
 	ctx context.Context,
@@ -36,7 +38,7 @@ func (s *profilesServiceImpl) CreateProfile(
 
 	path := "/profiles"
 
-	response := &CreateProfileResponse{}
+	var profile model.Profile
 
 	if err := core.HttpPost(
 		ctx,
@@ -45,11 +47,11 @@ func (s *profilesServiceImpl) CreateProfile(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&profile,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateProfileResponse{Profile: profile}, nil
 }

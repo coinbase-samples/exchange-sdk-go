@@ -28,7 +28,9 @@ type GetInterestChargesRequest struct {
 	LoanId string `json:"loan_id"`
 }
 
-type GetInterestChargesResponse []*model.InterestCharge
+type GetInterestChargesResponse struct {
+	InterestCharge []*model.InterestCharge `json:"interest_charge"`
+}
 
 func (s *loansServiceImpl) GetInterestCharges(
 	ctx context.Context,
@@ -37,7 +39,7 @@ func (s *loansServiceImpl) GetInterestCharges(
 
 	path := fmt.Sprintf("/loans/interest/%s", request.LoanId)
 
-	response := &GetInterestChargesResponse{}
+	var interestCharge []*model.InterestCharge
 
 	if err := core.HttpGet(
 		ctx,
@@ -46,11 +48,11 @@ func (s *loansServiceImpl) GetInterestCharges(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&interestCharge,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetInterestChargesResponse{InterestCharge: interestCharge}, nil
 }

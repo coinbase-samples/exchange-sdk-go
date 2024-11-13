@@ -37,7 +37,9 @@ type ListOrdersRequest struct {
 	Pagination *model.PaginationParams `json:"pagination,omitempty"`
 }
 
-type ListOrdersResponse []*model.Order
+type ListOrdersResponse struct {
+	Orders []*model.Order `json:"orders"`
+}
 
 func (s *ordersServiceImpl) ListOrders(
 	ctx context.Context,
@@ -74,7 +76,7 @@ func (s *ordersServiceImpl) ListOrders(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	response := &ListOrdersResponse{}
+	var orders []*model.Order
 
 	if err := core.HttpGet(
 		ctx,
@@ -83,11 +85,11 @@ func (s *ordersServiceImpl) ListOrders(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&orders,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListOrdersResponse{}, nil
 }

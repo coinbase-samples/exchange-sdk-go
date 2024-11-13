@@ -367,7 +367,7 @@ type WrappedAsset struct {
 	Apy               string `json:"apy"`
 }
 
-type StakeWrap struct {
+type Stakewrap struct {
 	Id             string    `json:"id"`
 	FromAmount     string    `json:"from_amount"`
 	ToAmount       string    `json:"to_amount"`

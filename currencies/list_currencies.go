@@ -25,7 +25,9 @@ import (
 
 type ListCurrenciesRequest struct{}
 
-type ListCurrenciesResponse []*model.Currency
+type ListCurrenciesResponse struct {
+	Currency []*model.Currency `json:"currency"`
+}
 
 func (s *currenciesServiceImpl) ListCurrencies(
 	ctx context.Context,
@@ -34,7 +36,7 @@ func (s *currenciesServiceImpl) ListCurrencies(
 
 	path := "/currencies"
 
-	response := &ListCurrenciesResponse{}
+	var currency []*model.Currency
 
 	if err := core.HttpGet(
 		ctx,
@@ -43,11 +45,11 @@ func (s *currenciesServiceImpl) ListCurrencies(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&currency,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListCurrenciesResponse{Currency: currency}, nil
 }

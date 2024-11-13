@@ -27,7 +27,9 @@ type ListProductsRequest struct {
 	Type string `json:"type,omitempty"`
 }
 
-type ListProductsResponse []*model.Product
+type ListProductsResponse struct {
+	Product []*model.Product `json:"product"`
+}
 
 func (s *productsServiceImpl) ListProducts(
 	ctx context.Context,
@@ -41,7 +43,7 @@ func (s *productsServiceImpl) ListProducts(
 		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
 	}
 
-	response := &ListProductsResponse{}
+	var product []*model.Product
 
 	if err := core.HttpGet(
 		ctx,
@@ -50,11 +52,11 @@ func (s *productsServiceImpl) ListProducts(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&product,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListProductsResponse{Product: product}, nil
 }

@@ -25,7 +25,9 @@ import (
 
 type ListAccountsRequest struct{}
 
-type ListAccountsResponse []*model.Account
+type ListAccountsResponse struct {
+	Accounts []*model.Account `json:"accounts"`
+}
 
 func (s *accountsServiceImpl) ListAccounts(
 	ctx context.Context,
@@ -34,7 +36,7 @@ func (s *accountsServiceImpl) ListAccounts(
 
 	path := "/accounts"
 
-	response := &ListAccountsResponse{}
+	var accounts []*model.Account
 
 	if err := core.HttpGet(
 		ctx,
@@ -43,11 +45,11 @@ func (s *accountsServiceImpl) ListAccounts(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&accounts,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListAccountsResponse{Accounts: accounts}, nil
 }

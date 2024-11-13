@@ -27,7 +27,9 @@ type ListLoansRequest struct {
 	Ids string `json:"ids,omitempty"`
 }
 
-type ListLoansResponse []*model.Loan
+type ListLoansResponse struct {
+	Loans []*model.Loan `json:"loans"`
+}
 
 func (s *loansServiceImpl) ListLoans(
 	ctx context.Context,
@@ -41,7 +43,7 @@ func (s *loansServiceImpl) ListLoans(
 		queryParams = core.AppendHttpQueryParam(queryParams, "ids", request.Ids)
 	}
 
-	response := &ListLoansResponse{}
+	var loans []*model.Loan
 
 	if err := core.HttpGet(
 		ctx,
@@ -50,11 +52,11 @@ func (s *loansServiceImpl) ListLoans(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&loans,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListLoansResponse{Loans: loans}, nil
 }

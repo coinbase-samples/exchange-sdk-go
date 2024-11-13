@@ -30,7 +30,9 @@ type DepositFromCoinbaseAccountRequest struct {
 	Currency          string `json:"currency"`
 }
 
-type DepositFromCoinbaseAccountResponse model.Transaction
+type DepositFromCoinbaseAccountResponse struct {
+	Transaction model.Transaction `json:"transaction"`
+}
 
 func (s *transfersServiceImpl) DepositFromCoinbaseAccount(
 	ctx context.Context,
@@ -39,7 +41,7 @@ func (s *transfersServiceImpl) DepositFromCoinbaseAccount(
 
 	path := "/deposits/coinbase-account"
 
-	response := &DepositFromCoinbaseAccountResponse{}
+	var transaction model.Transaction
 
 	if err := core.HttpPost(
 		ctx,
@@ -48,11 +50,11 @@ func (s *transfersServiceImpl) DepositFromCoinbaseAccount(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&transaction,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &DepositFromCoinbaseAccountResponse{Transaction: transaction}, nil
 }

@@ -30,7 +30,9 @@ type GetProductCandlesRequest struct {
 	End         string `json:"end"`
 }
 
-type GetProductCandlesResponse [][]float64
+type GetProductCandlesResponse struct {
+	ProductCandles [][]float64 `json:"product_candles"`
+}
 
 func (s *productsServiceImpl) GetProductCandles(
 	ctx context.Context,
@@ -52,7 +54,7 @@ func (s *productsServiceImpl) GetProductCandles(
 		queryParams = core.AppendHttpQueryParam(queryParams, "end", request.End)
 	}
 
-	response := &GetProductCandlesResponse{}
+	var productCandles [][]float64
 
 	if err := core.HttpGet(
 		ctx,
@@ -61,11 +63,11 @@ func (s *productsServiceImpl) GetProductCandles(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&productCandles,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductCandlesResponse{ProductCandles: productCandles}, nil
 }

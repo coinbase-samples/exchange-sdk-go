@@ -36,12 +36,14 @@ client := client.NewRestClient(credentials, httpClient)
 There are convenience functions to read the credentials as an environment variable (exchange.ReadEnvCredentials) and to deserialize the JSON structure (exchange.UnmarshalCredentials) if pulled from a different source. The JSON format expected by both is:
 
 ```
-{
-  "apiKey": "",
-  "passphrase": "",
-  "secretKey": "",
-}
+export EXCHANGE_CREDENTIALS='{
+    "apiKey":"",
+    "passphrase":"",
+    "signingKey":""
+}'
 ```
+
+This can be set from the command 
 
 Coinbase Exchange API credentials can be created in the Exchange web console under Settings -> APIs.
 

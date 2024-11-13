@@ -28,7 +28,9 @@ type GetWrappedAssetRequest struct {
 	WrappedAssetId string `json:"wrapped_asset_id"`
 }
 
-type GetWrappedAssetResponse model.WrappedAsset
+type GetWrappedAssetResponse struct {
+	WrappedAsset model.WrappedAsset `json:"wrapped_asset"`
+}
 
 func (s *wrappedAssetsServiceImpl) GetWrappedAsset(
 	ctx context.Context,
@@ -37,7 +39,7 @@ func (s *wrappedAssetsServiceImpl) GetWrappedAsset(
 
 	path := fmt.Sprintf("/wrapped-assets/%s", request.WrappedAssetId)
 
-	response := &GetWrappedAssetResponse{}
+	var wrappedAsset model.WrappedAsset
 
 	if err := core.HttpGet(
 		ctx,
@@ -46,11 +48,11 @@ func (s *wrappedAssetsServiceImpl) GetWrappedAsset(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&wrappedAsset,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetWrappedAssetResponse{WrappedAsset: wrappedAsset}, nil
 }

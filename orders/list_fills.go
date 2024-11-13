@@ -33,7 +33,9 @@ type ListFillsRequest struct {
 	Pagination *model.PaginationParams `json:"pagination,omitempty"`
 }
 
-type ListFillsResponse []*model.Fill
+type ListFillsResponse struct {
+	Fills []*model.Fill `json:"fills"`
+}
 
 func (s *ordersServiceImpl) ListFills(
 	ctx context.Context,
@@ -65,7 +67,7 @@ func (s *ordersServiceImpl) ListFills(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	response := &ListFillsResponse{}
+	var fills []*model.Fill
 
 	if err := core.HttpGet(
 		ctx,
@@ -74,11 +76,11 @@ func (s *ordersServiceImpl) ListFills(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&fills,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListFillsResponse{Fills: fills}, nil
 }

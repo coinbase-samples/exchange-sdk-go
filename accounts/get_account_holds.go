@@ -30,7 +30,9 @@ type GetAccountHoldsRequest struct {
 	Pagination *model.PaginationParams `json:"pagination_params"`
 }
 
-type GetAccountHoldsResponse []*model.AccountHold
+type GetAccountHoldsResponse struct {
+	AccountHold []*model.AccountHold `json:"account_hold"`
+}
 
 func (s *accountsServiceImpl) GetAccountHolds(
 	ctx context.Context,
@@ -41,7 +43,7 @@ func (s *accountsServiceImpl) GetAccountHolds(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	response := &GetAccountHoldsResponse{}
+	var accountHold []*model.AccountHold
 
 	if err := core.HttpGet(
 		ctx,
@@ -50,11 +52,11 @@ func (s *accountsServiceImpl) GetAccountHolds(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&accountHold,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetAccountHoldsResponse{AccountHold: accountHold}, nil
 }

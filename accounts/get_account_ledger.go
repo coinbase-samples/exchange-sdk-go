@@ -32,7 +32,9 @@ type GetAccountLedgerRequest struct {
 	Pagination *model.PaginationParams `json:"pagination_params"`
 }
 
-type GetAccountLedgerResponse []*model.AccountLedger
+type GetAccountLedgerResponse struct {
+	AccountLedger []*model.AccountLedger `json:"account_ledger"`
+}
 
 func (s *accountsServiceImpl) GetAccountLedger(
 	ctx context.Context,
@@ -43,7 +45,7 @@ func (s *accountsServiceImpl) GetAccountLedger(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	response := &GetAccountLedgerResponse{}
+	var accountLedger []*model.AccountLedger
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +54,11 @@ func (s *accountsServiceImpl) GetAccountLedger(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&accountLedger,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetAccountLedgerResponse{AccountLedger: accountLedger}, nil
 }

@@ -30,7 +30,9 @@ type CreateCryptoAddressRequest struct {
 	Network   string `json:"network"`
 }
 
-type CreateCryptoAddressResponse model.AddressResponse
+type CreateCryptoAddressResponse struct {
+	AddressResponse model.AddressResponse
+}
 
 func (s *coinbaseAccountsServiceImpl) CreateCryptoAddress(
 	ctx context.Context,
@@ -39,7 +41,7 @@ func (s *coinbaseAccountsServiceImpl) CreateCryptoAddress(
 
 	path := fmt.Sprintf("/coinbase-accounts/%s/addresses", request.AccountId)
 
-	response := &CreateCryptoAddressResponse{}
+	var addressResponse model.AddressResponse
 
 	if err := core.HttpPost(
 		ctx,
@@ -48,11 +50,11 @@ func (s *coinbaseAccountsServiceImpl) CreateCryptoAddress(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&addressResponse,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateCryptoAddressResponse{AddressResponse: addressResponse}, nil
 }

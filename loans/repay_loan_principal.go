@@ -31,7 +31,9 @@ type RepayLoanPrincipalRequest struct {
 	NativeAmount  string `json:"native_amount"`
 }
 
-type RepayLoanPrincipalResponse model.Repayment
+type RepayLoanPrincipalResponse struct {
+	Repayment model.Repayment `json:"repayment"`
+}
 
 func (s *loansServiceImpl) RepayLoanPrincipal(
 	ctx context.Context,
@@ -40,7 +42,7 @@ func (s *loansServiceImpl) RepayLoanPrincipal(
 
 	path := "/loans/repay-interest"
 
-	response := &RepayLoanPrincipalResponse{}
+	var repayment model.Repayment
 
 	if err := core.HttpPost(
 		ctx,
@@ -49,11 +51,11 @@ func (s *loansServiceImpl) RepayLoanPrincipal(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&repayment,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &RepayLoanPrincipalResponse{Repayment: repayment}, nil
 }

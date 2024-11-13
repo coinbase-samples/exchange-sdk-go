@@ -29,7 +29,9 @@ type CreateTravelRuleEntryRequest struct {
 	OriginatorCountry string `json:"originator_country"`
 }
 
-type CreateTravelRuleEntryResponse model.TravelRuleResponse
+type CreateTravelRuleEntryResponse struct {
+	TravelRuleResponse model.TravelRuleResponse `json:"travel_rule_response"`
+}
 
 func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
 	ctx context.Context,
@@ -38,7 +40,7 @@ func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
 
 	path := "/travel-rules"
 
-	response := &CreateTravelRuleEntryResponse{}
+	var travelRuleResponse model.TravelRuleResponse
 
 	if err := core.HttpPost(
 		ctx,
@@ -47,11 +49,11 @@ func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&travelRuleResponse,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateTravelRuleEntryResponse{TravelRuleResponse: travelRuleResponse}, nil
 }

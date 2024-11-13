@@ -27,7 +27,9 @@ type AddAddressesRequest struct {
 	Addresses []model.Address `json:"addresses"`
 }
 
-type AddAddressesResponse []*model.AddressBookResponse
+type AddAddressesResponse struct {
+	AddressBookResponse []*model.AddressBookResponse `json:"address_book_response"`
+}
 
 func (s *addressBookServiceImpl) AddAddresses(
 	ctx context.Context,
@@ -36,7 +38,7 @@ func (s *addressBookServiceImpl) AddAddresses(
 
 	path := "/address-book"
 
-	response := &AddAddressesResponse{}
+	var addressBookResponse []*model.AddressBookResponse
 
 	if err := core.HttpPost(
 		ctx,
@@ -45,11 +47,11 @@ func (s *addressBookServiceImpl) AddAddresses(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&addressBookResponse,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &AddAddressesResponse{AddressBookResponse: addressBookResponse}, nil
 }

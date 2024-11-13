@@ -26,7 +26,9 @@ import (
 type ListProductVolumeRequest struct {
 }
 
-type ListProductVolumeResponse []*model.ProductVolume
+type ListProductVolumeResponse struct {
+	ProductVolume []*model.ProductVolume `json:"product_volume"`
+}
 
 func (s *productsServiceImpl) ListProductVolume(
 	ctx context.Context,
@@ -35,7 +37,7 @@ func (s *productsServiceImpl) ListProductVolume(
 
 	path := "/products/volume-summary"
 
-	response := &ListProductVolumeResponse{}
+	var productVolume []*model.ProductVolume
 
 	if err := core.HttpGet(
 		ctx,
@@ -44,11 +46,11 @@ func (s *productsServiceImpl) ListProductVolume(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&productVolume,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListProductVolumeResponse{ProductVolume: productVolume}, nil
 }

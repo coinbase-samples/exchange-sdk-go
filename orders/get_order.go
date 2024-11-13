@@ -29,7 +29,9 @@ type GetOrderRequest struct {
 	MarketType string `json:"market_type,omitempty"`
 }
 
-type GetOrderResponse model.Order
+type GetOrderResponse struct {
+	Order model.Order `json:"order"`
+}
 
 func (s *ordersServiceImpl) GetOrder(
 	ctx context.Context,
@@ -43,7 +45,7 @@ func (s *ordersServiceImpl) GetOrder(
 		queryParams = core.AppendHttpQueryParam(queryParams, "market_type", request.MarketType)
 	}
 
-	response := &GetOrderResponse{}
+	var order model.Order
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +54,11 @@ func (s *ordersServiceImpl) GetOrder(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&order,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetOrderResponse{Order: order}, nil
 }

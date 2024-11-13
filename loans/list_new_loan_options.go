@@ -26,7 +26,9 @@ import (
 type ListNewLoanOptionsRequest struct {
 }
 
-type ListNewLoanOptionsResponse []*model.LoanOption
+type ListNewLoanOptionsResponse struct {
+	LoanOption []*model.LoanOption `json:"loan_option"`
+}
 
 func (s *loansServiceImpl) ListNewLoanOptions(
 	ctx context.Context,
@@ -35,7 +37,7 @@ func (s *loansServiceImpl) ListNewLoanOptions(
 
 	path := "/loans/options"
 
-	response := &ListNewLoanOptionsResponse{}
+	var loanOption []*model.LoanOption
 
 	if err := core.HttpGet(
 		ctx,
@@ -44,11 +46,11 @@ func (s *loansServiceImpl) ListNewLoanOptions(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&loanOption,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListNewLoanOptionsResponse{LoanOption: loanOption}, nil
 }

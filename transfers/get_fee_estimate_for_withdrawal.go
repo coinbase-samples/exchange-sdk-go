@@ -29,7 +29,9 @@ type GetFeeEstimateForWithdrawalRequest struct {
 	Network       string `json:"network"`
 }
 
-type GetFeeEstimateForWithdrawalResponse model.FeeEstimate
+type GetFeeEstimateForWithdrawalResponse struct {
+	FeeEstimate model.FeeEstimate `json:"fee_estimate"`
+}
 
 func (s *transfersServiceImpl) GetFeeEstimateForWithdrawal(
 	ctx context.Context,
@@ -51,7 +53,7 @@ func (s *transfersServiceImpl) GetFeeEstimateForWithdrawal(
 		queryParams = core.AppendHttpQueryParam(queryParams, "network", request.Network)
 	}
 
-	response := &GetFeeEstimateForWithdrawalResponse{}
+	var feeEstimate model.FeeEstimate
 
 	if err := core.HttpGet(
 		ctx,
@@ -60,11 +62,11 @@ func (s *transfersServiceImpl) GetFeeEstimateForWithdrawal(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&feeEstimate,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetFeeEstimateForWithdrawalResponse{FeeEstimate: feeEstimate}, nil
 }

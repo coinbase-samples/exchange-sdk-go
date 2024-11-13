@@ -29,7 +29,9 @@ type GetPrincipalRepaymentPreviewRequest struct {
 	NativeAmount string `json:"native_amount,omitempty"`
 }
 
-type GetPrincipalRepaymentPreviewResponse model.LoanPreview
+type GetPrincipalRepaymentPreviewResponse struct {
+	LoanPreview model.LoanPreview `json:"loan_preview"`
+}
 
 func (s *loansServiceImpl) GetPrincipalRepaymentPreview(
 	ctx context.Context,
@@ -51,7 +53,7 @@ func (s *loansServiceImpl) GetPrincipalRepaymentPreview(
 		queryParams = core.AppendHttpQueryParam(queryParams, "native_amount", request.NativeAmount)
 	}
 
-	response := &GetPrincipalRepaymentPreviewResponse{}
+	var loanPreview model.LoanPreview
 
 	if err := core.HttpGet(
 		ctx,
@@ -60,11 +62,11 @@ func (s *loansServiceImpl) GetPrincipalRepaymentPreview(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&loanPreview,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetPrincipalRepaymentPreviewResponse{LoanPreview: loanPreview}, nil
 }

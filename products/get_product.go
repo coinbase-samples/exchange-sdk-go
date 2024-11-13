@@ -28,7 +28,9 @@ type GetProductRequest struct {
 	ProductId string `json:"product_id"`
 }
 
-type GetProductResponse model.Product
+type GetProductResponse struct {
+	Product model.Product `json:"product"`
+}
 
 func (s *productsServiceImpl) GetProduct(
 	ctx context.Context,
@@ -37,7 +39,7 @@ func (s *productsServiceImpl) GetProduct(
 
 	path := fmt.Sprintf("/products/%s", request.ProductId)
 
-	response := &GetProductResponse{}
+	var product model.Product
 
 	if err := core.HttpGet(
 		ctx,
@@ -46,11 +48,11 @@ func (s *productsServiceImpl) GetProduct(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&product,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductResponse{Product: product}, nil
 }

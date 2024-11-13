@@ -29,7 +29,9 @@ type GetProfileRequest struct {
 	Active    string `json:"active,omitempty"`
 }
 
-type GetProfileResponse model.Profile
+type GetProfileResponse struct {
+	Profile model.Profile `json:"profile"`
+}
 
 func (s *profilesServiceImpl) GetProfile(
 	ctx context.Context,
@@ -43,7 +45,7 @@ func (s *profilesServiceImpl) GetProfile(
 		queryParams = core.AppendHttpQueryParam(queryParams, "active", request.Active)
 	}
 
-	response := &GetProfileResponse{}
+	var profile model.Profile
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +54,11 @@ func (s *profilesServiceImpl) GetProfile(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&profile,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProfileResponse{Profile: profile}, nil
 }

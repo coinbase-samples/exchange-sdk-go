@@ -29,7 +29,9 @@ type UpdateSettlementPreferenceRequest struct {
 	SettlementPreference string `json:"year"`
 }
 
-type UpdateSettlementPreferenceResponse model.SettlementPreference
+type UpdateSettlementPreferenceResponse struct {
+	SettlementPreference model.SettlementPreference `json:"settlement_preference"`
+}
 
 func (s *usersServiceImpl) UpdateSettlementPreference(
 	ctx context.Context,
@@ -38,7 +40,7 @@ func (s *usersServiceImpl) UpdateSettlementPreference(
 
 	path := fmt.Sprintf("/users/%s/settlement-preferences", request.UserId)
 
-	response := &UpdateSettlementPreferenceResponse{}
+	var settlementPreference model.SettlementPreference
 
 	if err := core.HttpPost(
 		ctx,
@@ -47,11 +49,11 @@ func (s *usersServiceImpl) UpdateSettlementPreference(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&settlementPreference,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &UpdateSettlementPreferenceResponse{SettlementPreference: settlementPreference}, nil
 }

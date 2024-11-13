@@ -29,6 +29,7 @@ type DeleteProfileRequest struct {
 }
 
 type DeleteProfileResponse struct {
+	Response string `json:"response,omitempty"`
 }
 
 func (s *profilesServiceImpl) DeleteProfile(
@@ -38,7 +39,7 @@ func (s *profilesServiceImpl) DeleteProfile(
 
 	path := fmt.Sprintf("/profiles/%s/deactivate", request.ProfileId)
 
-	response := &DeleteProfileResponse{}
+	var response string
 
 	if err := core.HttpPut(
 		ctx,
@@ -47,11 +48,11 @@ func (s *profilesServiceImpl) DeleteProfile(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&response,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &DeleteProfileResponse{Response: response}, nil
 }

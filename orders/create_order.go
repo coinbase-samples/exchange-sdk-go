@@ -42,7 +42,9 @@ type CreateOrderRequest struct {
 	StopLimitPrice string `json:"stop_limit_price,omitempty"`
 }
 
-type CreateOrderResponse model.Order
+type CreateOrderResponse struct {
+	Order model.Order `json:"order"`
+}
 
 func (s *ordersServiceImpl) CreateOrder(
 	ctx context.Context,
@@ -51,7 +53,7 @@ func (s *ordersServiceImpl) CreateOrder(
 
 	path := "/orders"
 
-	response := &CreateOrderResponse{}
+	var order model.Order
 
 	if err := core.HttpPost(
 		ctx,
@@ -60,11 +62,11 @@ func (s *ordersServiceImpl) CreateOrder(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&order,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateOrderResponse{Order: order}, nil
 }

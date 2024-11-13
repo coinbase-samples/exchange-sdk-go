@@ -29,7 +29,9 @@ type CreateStakewrapRequest struct {
 	Amount       string `json:"amount"`
 }
 
-type CreateStakewrapResponse model.StakeWrap
+type CreateStakewrapResponse struct {
+	Stakewrap model.Stakewrap `json:"stakewrap"`
+}
 
 func (s *wrappedAssetsServiceImpl) CreateStakewrap(
 	ctx context.Context,
@@ -38,7 +40,7 @@ func (s *wrappedAssetsServiceImpl) CreateStakewrap(
 
 	path := "/wrapped-assets/stake-wrap"
 
-	response := &CreateStakewrapResponse{}
+	var stakewrap model.Stakewrap
 
 	if err := core.HttpPost(
 		ctx,
@@ -47,11 +49,11 @@ func (s *wrappedAssetsServiceImpl) CreateStakewrap(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&stakewrap,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateStakewrapResponse{Stakewrap: stakewrap}, nil
 }

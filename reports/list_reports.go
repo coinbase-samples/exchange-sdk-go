@@ -31,7 +31,9 @@ type ListReportsRequest struct {
 	Pagination    *model.PaginationParams `json:"pagination_params,omitempty"`
 }
 
-type ListReportsResponse []*model.Report
+type ListReportsResponse struct {
+	Report []*model.Report `json:"report"`
+}
 
 func (s *reportsServiceImpl) ListReports(
 	ctx context.Context,
@@ -55,7 +57,7 @@ func (s *reportsServiceImpl) ListReports(
 
 	queryParams = utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	response := &ListReportsResponse{}
+	var report []*model.Report
 
 	if err := core.HttpGet(
 		ctx,
@@ -64,11 +66,11 @@ func (s *reportsServiceImpl) ListReports(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&report,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListReportsResponse{Report: report}, nil
 }

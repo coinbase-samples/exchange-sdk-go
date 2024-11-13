@@ -28,7 +28,9 @@ type GetWrappedAssetConversionRateRequest struct {
 	WrappedAssetId string `json:"wrapped_asset_id"`
 }
 
-type GetWrappedAssetConversionRateResponse model.Amount
+type GetWrappedAssetConversionRateResponse struct {
+	Amount model.Amount `json:"amount"`
+}
 
 func (s *wrappedAssetsServiceImpl) GetWrappedAssetConversionRate(
 	ctx context.Context,
@@ -37,7 +39,7 @@ func (s *wrappedAssetsServiceImpl) GetWrappedAssetConversionRate(
 
 	path := fmt.Sprintf("/wrapped-assets/%s/conversion-rate", request.WrappedAssetId)
 
-	response := &GetWrappedAssetConversionRateResponse{}
+	var amount model.Amount
 
 	if err := core.HttpGet(
 		ctx,
@@ -46,11 +48,11 @@ func (s *wrappedAssetsServiceImpl) GetWrappedAssetConversionRate(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&amount,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetWrappedAssetConversionRateResponse{Amount: amount}, nil
 }

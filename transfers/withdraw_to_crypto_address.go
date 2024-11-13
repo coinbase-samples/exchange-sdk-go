@@ -25,7 +25,9 @@ import (
 
 type WithdrawToCryptoAddressRequest model.WithdrawalInformation
 
-type WithdrawToCryptoAddressResponse model.Transaction
+type WithdrawToCryptoAddressResponse struct {
+	Transaction model.Transaction `json:"transaction"`
+}
 
 func (s *transfersServiceImpl) WithdrawToCryptoAddress(
 	ctx context.Context,
@@ -34,7 +36,7 @@ func (s *transfersServiceImpl) WithdrawToCryptoAddress(
 
 	path := "/withdrawals/crypto"
 
-	response := &WithdrawToCryptoAddressResponse{}
+	var transaction model.Transaction
 
 	if err := core.HttpPost(
 		ctx,
@@ -43,11 +45,11 @@ func (s *transfersServiceImpl) WithdrawToCryptoAddress(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		response,
+		&transaction,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &WithdrawToCryptoAddressResponse{Transaction: transaction}, nil
 }
