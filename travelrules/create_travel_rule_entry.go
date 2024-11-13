@@ -30,7 +30,7 @@ type CreateTravelRuleEntryRequest struct {
 }
 
 type CreateTravelRuleEntryResponse struct {
-	TravelRuleResponse model.TravelRule `json:"travel_rule_response"`
+	TravelRule model.TravelRule `json:"travel_rule"`
 }
 
 func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
@@ -40,7 +40,7 @@ func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
 
 	path := "/travel-rules"
 
-	var travelRuleResponse model.TravelRule
+	var travelRule model.TravelRule
 
 	if err := core.HttpPost(
 		ctx,
@@ -49,11 +49,11 @@ func (s *travelRulesServiceImpl) CreateTravelRuleEntry(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&travelRuleResponse,
+		&travelRule,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &CreateTravelRuleEntryResponse{TravelRuleResponse: travelRuleResponse}, nil
+	return &CreateTravelRuleEntryResponse{TravelRule: travelRule}, nil
 }

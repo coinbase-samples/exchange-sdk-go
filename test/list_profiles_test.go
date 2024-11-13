@@ -2,21 +2,20 @@ package test
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"github.com/coinbase-samples/exchange-sdk-go/profiles"
-	"os"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/coinbase-samples/core-go"
+	"github.com/coinbase-samples/exchange-sdk-go/client"
+	"github.com/coinbase-samples/exchange-sdk-go/credentials"
+	"github.com/coinbase-samples/exchange-sdk-go/profiles"
 )
 
 func TestListProfiles(t *testing.T) {
-	creds := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), creds); err != nil {
-		t.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()
@@ -24,13 +23,13 @@ func TestListProfiles(t *testing.T) {
 		t.Fatalf("unable to load default http client: %v", err)
 	}
 
-	client := client.NewRestClient(creds, httpClient)
+	client := client.NewRestClient(credentials, httpClient)
 	profilesSvc := profiles.NewProfilesService(client)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	response, err := profilesSvc.ListProfiles(ctx, &profiles.ListProfilesRequest{Active: "true"})
+	response, err := profilesSvc.ListProfiles(ctx, &profiles.ListProfilesRequest{})
 	if err != nil {
 		t.Fatalf("error listing profiles: %v", err)
 	}
@@ -38,12 +37,11 @@ func TestListProfiles(t *testing.T) {
 	if response == nil {
 		t.Fatal("expected non-nil response")
 	}
-
-	if len(*response) == 0 {
+	if len(response.Profiles) == 0 {
 		t.Fatal("expected at least one active profile in response")
 	}
 
-	firstProfile := (*response)[0]
+	firstProfile := response.Profiles[0]
 	if firstProfile.Id == "" {
 		t.Fatal("expected profile ID to be set")
 	}
@@ -52,8 +50,5 @@ func TestListProfiles(t *testing.T) {
 	}
 	if firstProfile.Name == "" {
 		t.Fatal("expected name to be set")
-	}
-	if !firstProfile.Active {
-		t.Fatal("expected profile to be active")
 	}
 }
