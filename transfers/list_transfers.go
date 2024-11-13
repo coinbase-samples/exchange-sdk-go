@@ -34,7 +34,7 @@ type ListTransfersRequest struct {
 }
 
 type ListTransfersResponse struct {
-	CoinbaseWallet []*model.CoinbaseWallet `json:"coinbase_wallet"`
+	CoinbaseWallets []*model.CoinbaseWallet `json:"coinbase_wallets"`
 }
 
 func (s *transfersServiceImpl) ListTransfers(
@@ -63,7 +63,7 @@ func (s *transfersServiceImpl) ListTransfers(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	var coinbaseWallet []*model.CoinbaseWallet
+	var coinbaseWallets []*model.CoinbaseWallet
 
 	if err := core.HttpGet(
 		ctx,
@@ -72,11 +72,11 @@ func (s *transfersServiceImpl) ListTransfers(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&coinbaseWallet,
+		&coinbaseWallets,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListTransfersResponse{CoinbaseWallet: coinbaseWallet}, nil
+	return &ListTransfersResponse{CoinbaseWallets: coinbaseWallets}, nil
 }

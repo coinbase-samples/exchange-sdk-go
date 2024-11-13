@@ -8,13 +8,12 @@ import (
 	"github.com/coinbase-samples/exchange-sdk-go/accounts"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"os"
 )
 
 func main() {
-	credentials := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), credentials); err != nil {
-		panic(fmt.Sprintf("unable to deserialize exchange credentials JSON: %v", err))
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()

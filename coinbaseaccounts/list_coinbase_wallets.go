@@ -26,7 +26,7 @@ import (
 type ListCoinbaseWalletsRequest struct{}
 
 type ListCoinbaseWalletsResponse struct {
-	CoinbaseWallet []*model.CoinbaseWallet `json:"coinbase_wallet"`
+	CoinbaseWallets []*model.CoinbaseWallet `json:"coinbase_wallets"`
 }
 
 func (s *coinbaseAccountsServiceImpl) ListCoinbaseWallets(
@@ -36,7 +36,7 @@ func (s *coinbaseAccountsServiceImpl) ListCoinbaseWallets(
 
 	path := "/coinbase-accounts"
 
-	var coinbaseWallet []*model.CoinbaseWallet
+	var coinbaseWallets []*model.CoinbaseWallet
 
 	if err := core.HttpGet(
 		ctx,
@@ -45,11 +45,11 @@ func (s *coinbaseAccountsServiceImpl) ListCoinbaseWallets(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&coinbaseWallet,
+		&coinbaseWallets,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListCoinbaseWalletsResponse{CoinbaseWallet: coinbaseWallet}, nil
+	return &ListCoinbaseWalletsResponse{CoinbaseWallets: coinbaseWallets}, nil
 }

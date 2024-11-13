@@ -32,7 +32,7 @@ type ListReportsRequest struct {
 }
 
 type ListReportsResponse struct {
-	Report []*model.Report `json:"report"`
+	Reports []*model.Report `json:"reports"`
 }
 
 func (s *reportsServiceImpl) ListReports(
@@ -57,7 +57,7 @@ func (s *reportsServiceImpl) ListReports(
 
 	queryParams = utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	var report []*model.Report
+	var reports []*model.Report
 
 	if err := core.HttpGet(
 		ctx,
@@ -66,11 +66,11 @@ func (s *reportsServiceImpl) ListReports(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&report,
+		&reports,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListReportsResponse{Report: report}, nil
+	return &ListReportsResponse{Reports: reports}, nil
 }

@@ -30,7 +30,7 @@ type GetConversionRequest struct {
 }
 
 type GetConversionResponse struct {
-	Conversion []*model.Conversion `json:"conversion"`
+	Conversion model.Conversion `json:"conversion"`
 }
 
 func (s *conversionsServiceImpl) GetConversion(
@@ -45,7 +45,7 @@ func (s *conversionsServiceImpl) GetConversion(
 		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 
-	var conversion []*model.Conversion
+	var conversion model.Conversion
 
 	if err := core.HttpGet(
 		ctx,

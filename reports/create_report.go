@@ -39,7 +39,7 @@ type CreateReportRequest struct {
 }
 
 type CreateReportResponse struct {
-	ReportResponse model.ReportResponse `json:"report_response"`
+	ReportResponse model.ReportSummary `json:"report_response"`
 }
 
 func (s *reportsServiceImpl) CreateReport(
@@ -49,7 +49,7 @@ func (s *reportsServiceImpl) CreateReport(
 
 	path := "/reports"
 
-	var reportResponse model.ReportResponse
+	var reportResponse model.ReportSummary
 
 	if err := core.HttpPost(
 		ctx,

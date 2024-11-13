@@ -30,7 +30,7 @@ type ListTravelRuleInformationRequest struct {
 }
 
 type ListTravelRuleInformationResponse struct {
-	TravelRuleResponse []*model.TravelRuleResponse `json:"travel_rule_response"`
+	TravelRules []*model.TravelRule `json:"travel_rules"`
 }
 
 func (s *travelRulesServiceImpl) ListTravelRuleInformation(
@@ -47,7 +47,7 @@ func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	var travelRuleResponse []*model.TravelRuleResponse
+	var travelRules []*model.TravelRule
 
 	if err := core.HttpGet(
 		ctx,
@@ -56,11 +56,11 @@ func (s *travelRulesServiceImpl) ListTravelRuleInformation(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&travelRuleResponse,
+		&travelRules,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListTravelRuleInformationResponse{TravelRuleResponse: travelRuleResponse}, nil
+	return &ListTravelRuleInformationResponse{TravelRules: travelRules}, nil
 }

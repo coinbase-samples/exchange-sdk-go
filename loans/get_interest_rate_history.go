@@ -29,7 +29,7 @@ type GetInterestRateHistoryRequest struct {
 }
 
 type GetInterestRateHistoryResponse struct {
-	RateHistory []*model.RateHistory `json:"rate_history"`
+	RateHistories []*model.RateHistory `json:"rate_histories"`
 }
 
 func (s *loansServiceImpl) GetInterestRateHistory(
@@ -39,7 +39,7 @@ func (s *loansServiceImpl) GetInterestRateHistory(
 
 	path := fmt.Sprintf("/loans/interest/history/%s", request.LoanId)
 
-	var rateHistory []*model.RateHistory
+	var rateHistories []*model.RateHistory
 
 	if err := core.HttpGet(
 		ctx,
@@ -48,11 +48,11 @@ func (s *loansServiceImpl) GetInterestRateHistory(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&rateHistory,
+		&rateHistories,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &GetInterestRateHistoryResponse{RateHistory: rateHistory}, nil
+	return &GetInterestRateHistoryResponse{RateHistories: rateHistories}, nil
 }

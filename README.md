@@ -20,9 +20,9 @@ To use the *Exchange Go SDK*, initialize the [Credentials](credentials/credentia
 enabled. Ensure that Exchange API credentials are stored in a secure manner.
 
 ```
-credentials := &credentials.Credentials{}
-if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), credentials); err != nil {
-    panic(fmt.Sprintf("unable to deserialize exchange credentials JSON: %v", err))
+credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+if err != nil {
+    panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 }
 
 httpClient, err := core.DefaultHttpClient()
@@ -33,17 +33,19 @@ if err != nil {
 client := client.NewRestClient(credentials, httpClient)
 ```
 
-There are convenience functions to read the credentials as an environment variable (exchange.ReadEnvCredentials) and to deserialize the JSON structure (exchange.UnmarshalCredentials) if pulled from a different source. The JSON format expected by both is:
+There are convenience functions to read the credentials as an environment variable (credentials.ReadEnvCredentials) and to deserialize the JSON structure (credentials.UnmarshalCredentials) if pulled from a different source. 
+
+To set up your credentials, add the `EXCHANGE_CREDENTIALS` environment variable to your `~/.zshrc` file:
 
 ```
 export EXCHANGE_CREDENTIALS='{
-    "apiKey":"",
-    "passphrase":"",
-    "signingKey":""
+    "apiKey":"YOUR_API_KEY",
+    "passphrase":"YOUR_PASSPHRASE",
+    "signingKey":"YOUR_SIGNING_KEY"
 }'
 ```
 
-This can be set from the command 
+After adding this line, run `source ~/.zshrc` to load the environment variable into your current shell session.
 
 Coinbase Exchange API credentials can be created in the Exchange web console under Settings -> APIs.
 

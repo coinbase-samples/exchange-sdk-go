@@ -31,7 +31,7 @@ type ListStakewrapsRequest struct {
 }
 
 type ListStakewrapsResponse struct {
-	Stakewrap []*model.Stakewrap `json:"stakewrap"`
+	Stakewraps []*model.Stakewrap `json:"stakewraps"`
 }
 
 func (s *wrappedAssetsServiceImpl) ListStakewraps(
@@ -52,7 +52,7 @@ func (s *wrappedAssetsServiceImpl) ListStakewraps(
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	var stakewrap []*model.Stakewrap
+	var stakewraps []*model.Stakewrap
 
 	if err := core.HttpGet(
 		ctx,
@@ -61,11 +61,11 @@ func (s *wrappedAssetsServiceImpl) ListStakewraps(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&stakewrap,
+		&stakewraps,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListStakewrapsResponse{Stakewrap: stakewrap}, nil
+	return &ListStakewrapsResponse{Stakewraps: stakewraps}, nil
 }

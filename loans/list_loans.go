@@ -21,10 +21,11 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
+	"strings"
 )
 
 type ListLoansRequest struct {
-	Ids string `json:"ids,omitempty"`
+	Ids []string `json:"ids,omitempty"`
 }
 
 type ListLoansResponse struct {
@@ -40,7 +41,8 @@ func (s *loansServiceImpl) ListLoans(
 
 	var queryParams string
 	if len(request.Ids) > 0 {
-		queryParams = core.AppendHttpQueryParam(queryParams, "ids", request.Ids)
+		ids := strings.Join(request.Ids, ",")
+		queryParams = core.AppendHttpQueryParam(queryParams, "ids", ids)
 	}
 
 	var loans []*model.Loan

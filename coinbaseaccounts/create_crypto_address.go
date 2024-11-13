@@ -31,7 +31,7 @@ type CreateCryptoAddressRequest struct {
 }
 
 type CreateCryptoAddressResponse struct {
-	AddressResponse model.AddressResponse
+	AddressResponse model.Address `json:"address_response"`
 }
 
 func (s *coinbaseAccountsServiceImpl) CreateCryptoAddress(
@@ -41,7 +41,7 @@ func (s *coinbaseAccountsServiceImpl) CreateCryptoAddress(
 
 	path := fmt.Sprintf("/coinbase-accounts/%s/addresses", request.AccountId)
 
-	var addressResponse model.AddressResponse
+	var addressResponse model.Address
 
 	if err := core.HttpPost(
 		ctx,

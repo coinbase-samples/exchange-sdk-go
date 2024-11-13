@@ -28,7 +28,7 @@ type ListProfilesRequest struct {
 }
 
 type ListProfilesResponse struct {
-	Profile []*model.Profile `json:"profile"`
+	Profiles []*model.Profile `json:"profiles"`
 }
 
 func (s *profilesServiceImpl) ListProfiles(
@@ -43,7 +43,7 @@ func (s *profilesServiceImpl) ListProfiles(
 		queryParams = core.AppendHttpQueryParam(queryParams, "active", request.Active)
 	}
 
-	var profile []*model.Profile
+	var profiles []*model.Profile
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +52,11 @@ func (s *profilesServiceImpl) ListProfiles(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&profile,
+		&profiles,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListProfilesResponse{Profile: profile}, nil
+	return &ListProfilesResponse{Profiles: profiles}, nil
 }

@@ -31,7 +31,7 @@ type GetAccountHoldsRequest struct {
 }
 
 type GetAccountHoldsResponse struct {
-	AccountHold []*model.AccountHold `json:"account_hold"`
+	AccountHolds []*model.AccountHold `json:"account_holds"`
 }
 
 func (s *accountsServiceImpl) GetAccountHolds(
@@ -43,7 +43,7 @@ func (s *accountsServiceImpl) GetAccountHolds(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	var accountHold []*model.AccountHold
+	var accountHolds []*model.AccountHold
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +52,11 @@ func (s *accountsServiceImpl) GetAccountHolds(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&accountHold,
+		&accountHolds,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &GetAccountHoldsResponse{AccountHold: accountHold}, nil
+	return &GetAccountHoldsResponse{AccountHolds: accountHolds}, nil
 }

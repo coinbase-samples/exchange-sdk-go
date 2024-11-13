@@ -33,7 +33,7 @@ type GetAccountLedgerRequest struct {
 }
 
 type GetAccountLedgerResponse struct {
-	AccountLedger []*model.AccountLedger `json:"account_ledger"`
+	AccountLedgers []*model.AccountLedger `json:"account_ledgers"`
 }
 
 func (s *accountsServiceImpl) GetAccountLedger(
@@ -45,7 +45,7 @@ func (s *accountsServiceImpl) GetAccountLedger(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	var accountLedger []*model.AccountLedger
+	var accountLedgers []*model.AccountLedger
 
 	if err := core.HttpGet(
 		ctx,
@@ -54,11 +54,11 @@ func (s *accountsServiceImpl) GetAccountLedger(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&accountLedger,
+		&accountLedgers,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &GetAccountLedgerResponse{AccountLedger: accountLedger}, nil
+	return &GetAccountLedgerResponse{AccountLedgers: accountLedgers}, nil
 }

@@ -29,7 +29,7 @@ type CancelOrdersRequest struct {
 }
 
 type CancelOrdersResponse struct {
-	Description []*model.Description `json:"description"`
+	Descriptions []*model.Description `json:"descriptions"`
 }
 
 func (s *ordersServiceImpl) CancelOrders(
@@ -62,5 +62,5 @@ func (s *ordersServiceImpl) CancelOrders(
 		return nil, err
 	}
 
-	return &CancelOrdersResponse{Description: description}, nil
+	return &CancelOrdersResponse{Descriptions: description}, nil
 }

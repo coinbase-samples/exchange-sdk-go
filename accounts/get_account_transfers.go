@@ -32,7 +32,7 @@ type GetAccountTransfersRequest struct {
 }
 
 type GetAccountTransfersResponse struct {
-	AccountTransfer []*model.AccountTransfer `json:"account_transfer"`
+	AccountTransfers []*model.AccountTransfer `json:"account_transfers"`
 }
 
 func (s *accountsServiceImpl) GetAccountTransfers(
@@ -44,7 +44,7 @@ func (s *accountsServiceImpl) GetAccountTransfers(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	var accountTransfer []*model.AccountTransfer
+	var accountTransfers []*model.AccountTransfer
 
 	if err := core.HttpGet(
 		ctx,
@@ -53,11 +53,11 @@ func (s *accountsServiceImpl) GetAccountTransfers(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&accountTransfer,
+		&accountTransfers,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &GetAccountTransfersResponse{AccountTransfer: accountTransfer}, nil
+	return &GetAccountTransfersResponse{AccountTransfers: accountTransfers}, nil
 }

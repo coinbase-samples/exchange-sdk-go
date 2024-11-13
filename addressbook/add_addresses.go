@@ -24,11 +24,11 @@ import (
 )
 
 type AddAddressesRequest struct {
-	Addresses []model.Address `json:"addresses"`
+	Addresses []model.AddressSummary `json:"addresses"`
 }
 
 type AddAddressesResponse struct {
-	AddressBookResponse []*model.AddressBookResponse `json:"address_book_response"`
+	AddressBookEntries []*model.AddressBookEntry `json:"address_book_entries"`
 }
 
 func (s *addressBookServiceImpl) AddAddresses(
@@ -38,7 +38,7 @@ func (s *addressBookServiceImpl) AddAddresses(
 
 	path := "/address-book"
 
-	var addressBookResponse []*model.AddressBookResponse
+	var addressBookEntries []*model.AddressBookEntry
 
 	if err := core.HttpPost(
 		ctx,
@@ -47,11 +47,11 @@ func (s *addressBookServiceImpl) AddAddresses(
 		core.EmptyQueryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&addressBookResponse,
+		&addressBookEntries,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &AddAddressesResponse{AddressBookResponse: addressBookResponse}, nil
+	return &AddAddressesResponse{AddressBookEntries: addressBookEntries}, nil
 }

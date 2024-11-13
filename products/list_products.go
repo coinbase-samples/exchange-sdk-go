@@ -28,7 +28,7 @@ type ListProductsRequest struct {
 }
 
 type ListProductsResponse struct {
-	Product []*model.Product `json:"product"`
+	Products []*model.Product `json:"products"`
 }
 
 func (s *productsServiceImpl) ListProducts(
@@ -43,7 +43,7 @@ func (s *productsServiceImpl) ListProducts(
 		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
 	}
 
-	var product []*model.Product
+	var products []*model.Product
 
 	if err := core.HttpGet(
 		ctx,
@@ -52,11 +52,11 @@ func (s *productsServiceImpl) ListProducts(
 		queryParams,
 		client.DefaultSuccessHttpStatusCodes,
 		request,
-		&product,
+		&products,
 		s.client.HeadersFunc(),
 	); err != nil {
 		return nil, err
 	}
 
-	return &ListProductsResponse{Product: product}, nil
+	return &ListProductsResponse{Products: products}, nil
 }
