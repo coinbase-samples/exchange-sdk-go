@@ -55,7 +55,7 @@ func (s *reportsServiceImpl) ListReports(
 		queryParams = core.AppendHttpQueryParam(queryParams, "ignore_expired", request.IgnoreExpired)
 	}
 
-	queryParams = utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
+	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	var reports []*model.Report
 

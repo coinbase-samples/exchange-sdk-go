@@ -51,9 +51,7 @@ Coinbase Exchange API credentials can be created in the Exchange web console und
 
 ## Accessing the API
 
-Once the client is initialized, make the desired call. For example, to [list accounts](accounts/list_accounts.go),
-pass in the request object, check for an error, and if nil, process the response.
-
+After initializing the client, you need to set up the appropriate service to access specific API endpoints. For example, to [list accounts](accounts/list_accounts.go), initialize the accounts service, pass in the request object, check for an error, and, if nil, process the response.
 
 ```
 accountsSvc := accounts.NewAccountsService(client)
