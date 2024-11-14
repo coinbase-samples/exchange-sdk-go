@@ -2,21 +2,20 @@ package test
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"github.com/coinbase-samples/exchange-sdk-go/products"
-	"os"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/coinbase-samples/core-go"
+	"github.com/coinbase-samples/exchange-sdk-go/client"
+	"github.com/coinbase-samples/exchange-sdk-go/credentials"
+	"github.com/coinbase-samples/exchange-sdk-go/products"
 )
 
 func TestGetProductTicker(t *testing.T) {
-	creds := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), creds); err != nil {
-		t.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()
@@ -24,7 +23,7 @@ func TestGetProductTicker(t *testing.T) {
 		t.Fatalf("unable to load default http client: %v", err)
 	}
 
-	client := client.NewRestClient(creds, httpClient)
+	client := client.NewRestClient(credentials, httpClient)
 	productsSvc := products.NewProductsService(client)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -43,19 +42,17 @@ func TestGetProductTicker(t *testing.T) {
 		t.Fatal("expected non-nil response")
 	}
 
-	if response.TradeId == 0 {
+	productTicker := response.ProductTicker
+	if productTicker.TradeId == 0 {
 		t.Fatal("expected trade ID to be set")
 	}
-
-	if response.Price == "" {
+	if productTicker.Price == "" {
 		t.Fatal("expected price field to be set")
 	}
-
-	if response.Bid == "" {
+	if productTicker.Bid == "" {
 		t.Fatal("expected bid field to be set")
 	}
-
-	if response.Ask == "" {
+	if productTicker.Ask == "" {
 		t.Fatal("expected ask field to be set")
 	}
 }

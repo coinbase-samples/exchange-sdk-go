@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetProfileRequest struct {
@@ -30,7 +29,9 @@ type GetProfileRequest struct {
 	Active    string `json:"active,omitempty"`
 }
 
-type GetProfileResponse model.Profile
+type GetProfileResponse struct {
+	Profile model.Profile `json:"profile"`
+}
 
 func (s *profilesServiceImpl) GetProfile(
 	ctx context.Context,
@@ -41,14 +42,23 @@ func (s *profilesServiceImpl) GetProfile(
 
 	var queryParams string
 	if len(request.Active) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "active", request.Active)
+		queryParams = core.AppendHttpQueryParam(queryParams, "active", request.Active)
 	}
 
-	response := &GetProfileResponse{}
+	var profile model.Profile
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&profile,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProfileResponse{Profile: profile}, nil
 }

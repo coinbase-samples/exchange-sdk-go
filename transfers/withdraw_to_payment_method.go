@@ -30,7 +30,9 @@ type WithdrawToPaymentMethodRequest struct {
 	Currency        string `json:"currency"`
 }
 
-type WithdrawToPaymentMethodResponse model.Transaction
+type WithdrawToPaymentMethodResponse struct {
+	Transaction model.Transaction `json:"transaction"`
+}
 
 func (s *transfersServiceImpl) WithdrawToPaymentMethod(
 	ctx context.Context,
@@ -39,11 +41,20 @@ func (s *transfersServiceImpl) WithdrawToPaymentMethod(
 
 	path := "/withdrawals/payment-method"
 
-	response := &WithdrawToPaymentMethodResponse{}
+	var transaction model.Transaction
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&transaction,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &WithdrawToPaymentMethodResponse{Transaction: transaction}, nil
 }

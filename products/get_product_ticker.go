@@ -28,7 +28,9 @@ type GetProductTickerRequest struct {
 	ProductId string `json:"product_id"`
 }
 
-type GetProductTickerResponse model.ProductTicker
+type GetProductTickerResponse struct {
+	ProductTicker model.ProductTicker `json:"product_ticker"`
+}
 
 func (s *productsServiceImpl) GetProductTicker(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *productsServiceImpl) GetProductTicker(
 
 	path := fmt.Sprintf("/products/%s/ticker", request.ProductId)
 
-	response := &GetProductTickerResponse{}
+	var productTicker model.ProductTicker
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&productTicker,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductTickerResponse{ProductTicker: productTicker}, nil
 }

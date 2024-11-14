@@ -26,7 +26,9 @@ import (
 type ListInterestSummariesRequest struct {
 }
 
-type ListInterestSummariesResponse model.InterestSummary
+type ListInterestSummariesResponse struct {
+	InterestSummaries []*model.InterestSummary `json:"interest_summaries"`
+}
 
 func (s *loansServiceImpl) ListInterestSummaries(
 	ctx context.Context,
@@ -35,11 +37,20 @@ func (s *loansServiceImpl) ListInterestSummaries(
 
 	path := "/loans/interest"
 
-	response := &ListInterestSummariesResponse{}
+	var interestSummaries []*model.InterestSummary
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&interestSummaries,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListInterestSummariesResponse{InterestSummaries: interestSummaries}, nil
 }

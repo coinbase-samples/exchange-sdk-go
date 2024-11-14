@@ -26,7 +26,9 @@ import (
 type GetLendingOverviewRequest struct {
 }
 
-type GetLendingOverviewResponse model.LendingOverview
+type GetLendingOverviewResponse struct {
+	LendingOverview model.LendingOverview `json:"lending_overview"`
+}
 
 func (s *loansServiceImpl) GetLendingOverview(
 	ctx context.Context,
@@ -35,11 +37,20 @@ func (s *loansServiceImpl) GetLendingOverview(
 
 	path := "/loans/lending-overview"
 
-	response := &GetLendingOverviewResponse{}
+	var lendingOverview model.LendingOverview
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&lendingOverview,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetLendingOverviewResponse{LendingOverview: lendingOverview}, nil
 }

@@ -28,7 +28,9 @@ type GetTransferRequest struct {
 	TransferId string `json:"transfer_id"`
 }
 
-type GetTransferResponse model.Transfer
+type GetTransferResponse struct {
+	Transfer model.Transfer `json:"transfer"`
+}
 
 func (s *transfersServiceImpl) GetTransfer(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *transfersServiceImpl) GetTransfer(
 
 	path := fmt.Sprintf("/transfers/%s", request.TransferId)
 
-	response := &GetTransferResponse{}
+	var transfer model.Transfer
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&transfer,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetTransferResponse{Transfer: transfer}, nil
 }

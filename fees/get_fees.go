@@ -25,7 +25,9 @@ import (
 
 type GetFeesRequest struct{}
 
-type GetFeesResponse model.Fees
+type GetFeesResponse struct {
+	Fees model.Fees `json:"fees"`
+}
 
 func (s *feesServiceImpl) GetFees(
 	ctx context.Context,
@@ -34,11 +36,20 @@ func (s *feesServiceImpl) GetFees(
 
 	path := "/fees"
 
-	response := &GetFeesResponse{}
+	var fees model.Fees
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&fees,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetFeesResponse{Fees: fees}, nil
 }

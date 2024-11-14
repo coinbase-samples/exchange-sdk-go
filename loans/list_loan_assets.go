@@ -26,7 +26,9 @@ import (
 type ListLoanAssetsRequest struct {
 }
 
-type ListLoanAssetsResponse model.LoanAsset
+type ListLoanAssetsResponse struct {
+	LoanAsset model.LoanAsset `json:"loan_asset"`
+}
 
 func (s *loansServiceImpl) ListLoanAssets(
 	ctx context.Context,
@@ -35,11 +37,20 @@ func (s *loansServiceImpl) ListLoanAssets(
 
 	path := "/loans/assets"
 
-	response := &ListLoanAssetsResponse{}
+	var loanAsset model.LoanAsset
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&loanAsset,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListLoanAssetsResponse{}, nil
 }

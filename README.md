@@ -20,36 +20,38 @@ To use the *Exchange Go SDK*, initialize the [Credentials](credentials/credentia
 enabled. Ensure that Exchange API credentials are stored in a secure manner.
 
 ```
-credentials := &credentials.Credentials{}
-if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), credentials); err != nil {
-    log.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+if err != nil {
+    panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 }
 
 httpClient, err := core.DefaultHttpClient()
 if err != nil {
-    log.Fatalf("unable to load default http client: %v", err)
+    panic(fmt.Sprintf("unable to load default http client: %v", err))
 }
 
 client := client.NewRestClient(credentials, httpClient)
 ```
 
-There are convenience functions to read the credentials as an environment variable (exchange.ReadEnvCredentials) and to deserialize the JSON structure (exchange.UnmarshalCredentials) if pulled from a different source. The JSON format expected by both is:
+There are convenience functions to read the credentials as an environment variable (credentials.ReadEnvCredentials) and to deserialize the JSON structure (credentials.UnmarshalCredentials) if pulled from a different source.
+
+To set up your credentials, add the `EXCHANGE_CREDENTIALS` environment variable to your `~/.zshrc` file:
 
 ```
-{
-  "apiKey": "",
-  "passphrase": "",
-  "secretKey": "",
-}
+export EXCHANGE_CREDENTIALS='{
+    "apiKey":"YOUR_API_KEY",
+    "passphrase":"YOUR_PASSPHRASE",
+    "signingKey":"YOUR_SIGNING_KEY"
+}'
 ```
+
+After adding this line, run `source ~/.zshrc` to load the environment variable into your current shell session.
 
 Coinbase Exchange API credentials can be created in the Exchange web console under Settings -> APIs.
 
 ## Accessing the API
 
-Once the client is initialized, make the desired call. For example, to [list accounts](accounts/list_accounts.go),
-pass in the request object, check for an error, and if nil, process the response.
-
+After initializing the client, you need to set up the appropriate service to access specific API endpoints. For example, to [list accounts](accounts/list_accounts.go), initialize the accounts service, pass in the request object, check for an error, and, if nil, process the response.
 
 ```
 accountsSvc := accounts.NewAccountsService(client)
@@ -57,13 +59,13 @@ request := &accounts.ListAccountsRequest{}
 
 response, err := accountsSvc.ListAccounts(context.Background(), request)
 if err != nil {
-    log.Fatalf("unable to list accounts: %v", err)
+    panic(fmt.Sprintf("unable to list accounts: %v", err))
 }
 
 // Print the JSON-formatted response
 jsonResponse, err := json.MarshalIndent(response, "", "  ")
 if err != nil {
-    log.Fatalf("error marshaling response to JSON: %v", err)
+    panic(fmt.Sprintf("error marshaling response to JSON: %v", err))
 }
 fmt.Println(string(jsonResponse))
 ```

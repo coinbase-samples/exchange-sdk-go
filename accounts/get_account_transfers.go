@@ -31,7 +31,9 @@ type GetAccountTransfersRequest struct {
 	Pagination *model.PaginationParams `json:"pagination_params"`
 }
 
-type GetAccountTransfersResponse []*model.AccountTransfer
+type GetAccountTransfersResponse struct {
+	AccountTransfers []*model.AccountTransfer `json:"account_transfers"`
+}
 
 func (s *accountsServiceImpl) GetAccountTransfers(
 	ctx context.Context,
@@ -42,11 +44,20 @@ func (s *accountsServiceImpl) GetAccountTransfers(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	response := &GetAccountTransfersResponse{}
+	var accountTransfers []*model.AccountTransfer
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&accountTransfers,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetAccountTransfersResponse{AccountTransfers: accountTransfers}, nil
 }

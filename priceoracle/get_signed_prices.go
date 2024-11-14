@@ -25,7 +25,9 @@ import (
 
 type GetSignedPricesRequest struct{}
 
-type GetSignedPricesResponse model.SignedPrice
+type GetSignedPricesResponse struct {
+	SignedPrice model.SignedPrice `json:"signed_price"`
+}
 
 func (s *priceOracleServiceImpl) GetSignedPrices(
 	ctx context.Context,
@@ -34,11 +36,20 @@ func (s *priceOracleServiceImpl) GetSignedPrices(
 
 	path := "/oracle"
 
-	response := &GetSignedPricesResponse{}
+	var signedPrice model.SignedPrice
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&signedPrice,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetSignedPricesResponse{SignedPrice: signedPrice}, nil
 }

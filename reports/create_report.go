@@ -38,7 +38,9 @@ type CreateReportRequest struct {
 	RfqFills       *model.RfqFillsParams   `json:"rfq-fills,omitempty"`
 }
 
-type CreateReportResponse model.ReportResponse
+type CreateReportResponse struct {
+	Report model.ReportSummary `json:"report"`
+}
 
 func (s *reportsServiceImpl) CreateReport(
 	ctx context.Context,
@@ -47,11 +49,20 @@ func (s *reportsServiceImpl) CreateReport(
 
 	path := "/reports"
 
-	response := &CreateReportResponse{}
+	var report model.ReportSummary
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&report,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateReportResponse{Report: report}, nil
 }

@@ -29,7 +29,9 @@ type RenameProfileRequest struct {
 	Name      string `json:"name"`
 }
 
-type RenameProfileResponse model.Profile
+type RenameProfileResponse struct {
+	Profile model.Profile `json:"profile"`
+}
 
 func (s *profilesServiceImpl) RenameProfile(
 	ctx context.Context,
@@ -38,11 +40,20 @@ func (s *profilesServiceImpl) RenameProfile(
 
 	path := fmt.Sprintf("/profiles/%s", request.ProfileId)
 
-	response := &RenameProfileResponse{}
+	var profile model.Profile
 
-	if err := core.HttpPut(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPut(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&profile,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &RenameProfileResponse{Profile: profile}, nil
 }

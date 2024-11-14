@@ -21,7 +21,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetNewLoanPreviewRequest struct {
@@ -29,7 +28,9 @@ type GetNewLoanPreviewRequest struct {
 	NativeAmount string `json:"native_amount,omitempty"`
 }
 
-type GetNewLoanPreviewResponse model.LoanPreview
+type GetNewLoanPreviewResponse struct {
+	LoanPreview model.LoanPreview `json:"loan_preview"`
+}
 
 func (s *loansServiceImpl) GetNewLoanPreview(
 	ctx context.Context,
@@ -40,18 +41,27 @@ func (s *loansServiceImpl) GetNewLoanPreview(
 
 	var queryParams string
 	if len(request.Currency) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "currency", request.Currency)
+		queryParams = core.AppendHttpQueryParam(queryParams, "currency", request.Currency)
 	}
 
 	if len(request.NativeAmount) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "native_amount", request.NativeAmount)
+		queryParams = core.AppendHttpQueryParam(queryParams, "native_amount", request.NativeAmount)
 	}
 
-	response := &GetNewLoanPreviewResponse{}
+	var loanPreview model.LoanPreview
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&loanPreview,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetNewLoanPreviewResponse{}, nil
 }

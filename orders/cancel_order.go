@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type CancelOrderRequest struct {
@@ -31,7 +30,9 @@ type CancelOrderRequest struct {
 	ProductId string `json:"product_id,omitempty"`
 }
 
-type CancelOrderResponse model.Description
+type CancelOrderResponse struct {
+	Description model.Description `json:"description"`
+}
 
 func (s *ordersServiceImpl) CancelOrder(
 	ctx context.Context,
@@ -42,17 +43,26 @@ func (s *ordersServiceImpl) CancelOrder(
 
 	var queryParams string
 	if len(request.ProfileId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "profile_id", request.ProfileId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "profile_id", request.ProfileId)
 	}
 	if len(request.ProductId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "product_id", request.ProductId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "product_id", request.ProductId)
 	}
 
-	response := &CancelOrderResponse{}
+	var description model.Description
 
-	if err := core.HttpDelete(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&description,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CancelOrderResponse{Description: description}, nil
 }

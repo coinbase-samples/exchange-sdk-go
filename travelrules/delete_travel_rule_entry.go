@@ -28,6 +28,7 @@ type DeleteTravelRuleEntryRequest struct {
 }
 
 type DeleteTravelRuleEntryResponse struct {
+	Response string `json:"response,omitempty"`
 }
 
 func (s *travelRulesServiceImpl) DeleteTravelRuleEntry(
@@ -37,11 +38,20 @@ func (s *travelRulesServiceImpl) DeleteTravelRuleEntry(
 
 	path := fmt.Sprintf("/travel-rules/%s", request.Id)
 
-	response := &DeleteTravelRuleEntryResponse{}
+	var response string
 
-	if err := core.HttpDelete(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &DeleteTravelRuleEntryResponse{Response: response}, nil
 }

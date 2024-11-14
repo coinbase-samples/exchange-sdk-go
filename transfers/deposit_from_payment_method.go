@@ -30,7 +30,9 @@ type DepositFromPaymentMethodRequest struct {
 	Currency        string `json:"currency"`
 }
 
-type DepositFromPaymentMethodResponse model.Transaction
+type DepositFromPaymentMethodResponse struct {
+	Transaction model.Transaction `json:"transaction"`
+}
 
 func (s *transfersServiceImpl) DepositFromPaymentMethod(
 	ctx context.Context,
@@ -39,11 +41,20 @@ func (s *transfersServiceImpl) DepositFromPaymentMethod(
 
 	path := "/deposits/payment-method"
 
-	response := &DepositFromPaymentMethodResponse{}
+	var transaction model.Transaction
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&transaction,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &DepositFromPaymentMethodResponse{Transaction: transaction}, nil
 }

@@ -21,14 +21,15 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type ListProductsRequest struct {
 	Type string `json:"type,omitempty"`
 }
 
-type ListProductsResponse []*model.Product
+type ListProductsResponse struct {
+	Products []*model.Product `json:"products"`
+}
 
 func (s *productsServiceImpl) ListProducts(
 	ctx context.Context,
@@ -39,14 +40,23 @@ func (s *productsServiceImpl) ListProducts(
 
 	var queryParams string
 	if len(request.Type) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "type", request.Type)
+		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
 	}
 
-	response := &ListProductsResponse{}
+	var products []*model.Product
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&products,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListProductsResponse{Products: products}, nil
 }

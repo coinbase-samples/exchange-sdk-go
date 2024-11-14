@@ -25,7 +25,9 @@ import (
 
 type GetConversionFeeRatesRequest struct{}
 
-type GetConversionFeeRatesResponse []*model.FeeRate
+type GetConversionFeeRatesResponse struct {
+	FeeRates []*model.FeeRate `json:"fee_rates"`
+}
 
 func (s *conversionsServiceImpl) GetConversionFeeRates(
 	ctx context.Context,
@@ -34,11 +36,20 @@ func (s *conversionsServiceImpl) GetConversionFeeRates(
 
 	path := "/conversions/fees"
 
-	response := &GetConversionFeeRatesResponse{}
+	var feeRates []*model.FeeRate
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&feeRates,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetConversionFeeRatesResponse{FeeRates: feeRates}, nil
 }

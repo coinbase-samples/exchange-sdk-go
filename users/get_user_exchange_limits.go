@@ -28,7 +28,9 @@ type GetUserExchangeLimitsRequest struct {
 	UserId string `json:"user_id"`
 }
 
-type GetUserExchangeLimitsResponse model.ExchangeLimit
+type GetUserExchangeLimitsResponse struct {
+	ExchangeLimit model.ExchangeLimit `json:"exchange_limit"`
+}
 
 func (s *usersServiceImpl) GetUserExchangeLimits(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *usersServiceImpl) GetUserExchangeLimits(
 
 	path := fmt.Sprintf("/users/%s/exchange-limits", request.UserId)
 
-	response := &GetUserExchangeLimitsResponse{}
+	var exchangeLimit model.ExchangeLimit
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&exchangeLimit,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetUserExchangeLimitsResponse{ExchangeLimit: exchangeLimit}, nil
 }

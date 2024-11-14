@@ -2,21 +2,20 @@ package test
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"github.com/coinbase-samples/exchange-sdk-go/wrappedassets"
-	"os"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/coinbase-samples/core-go"
+	"github.com/coinbase-samples/exchange-sdk-go/client"
+	"github.com/coinbase-samples/exchange-sdk-go/credentials"
+	"github.com/coinbase-samples/exchange-sdk-go/wrappedassets"
 )
 
 func TestListStakewraps(t *testing.T) {
-	creds := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), creds); err != nil {
-		t.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()
@@ -24,16 +23,13 @@ func TestListStakewraps(t *testing.T) {
 		t.Fatalf("unable to load default http client: %v", err)
 	}
 
-	client := client.NewRestClient(creds, httpClient)
+	client := client.NewRestClient(credentials, httpClient)
 	wrappedAssetsSvc := wrappedassets.NewWrappedAssetsService(client)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	request := &wrappedassets.ListStakewrapsRequest{
-		From: "2024-01-01T00:00:00Z",
-		To:   "2024-12-31T23:59:59Z",
-	}
+	request := &wrappedassets.ListStakewrapsRequest{}
 
 	response, err := wrappedAssetsSvc.ListStakewraps(ctx, request)
 	if err != nil {
@@ -43,12 +39,11 @@ func TestListStakewraps(t *testing.T) {
 	if response == nil {
 		t.Fatal("expected non-nil response")
 	}
-
-	if len(*response) == 0 {
+	if len(response.Stakewraps) == 0 {
 		t.Fatal("expected at least one stakewrap in response")
 	}
 
-	firstStakewrap := (*response)[0]
+	firstStakewrap := response.Stakewraps[0]
 	if firstStakewrap.Id == "" {
 		t.Fatal("expected stakewrap ID to be set")
 	}

@@ -36,11 +36,20 @@ func (s *wrappedAssetsServiceImpl) ListWrappedAssets(
 
 	path := "/wrapped-assets"
 
-	response := &ListWrappedAssetsResponse{}
+	var wrappedAssets []model.WrappedAsset
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&wrappedAssets,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListWrappedAssetsResponse{WrappedAssets: wrappedAssets}, nil
 }

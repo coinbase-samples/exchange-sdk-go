@@ -28,7 +28,9 @@ type GetProductStatsRequest struct {
 	ProductId string `json:"product_id"`
 }
 
-type GetProductStatsResponse model.ProductStats
+type GetProductStatsResponse struct {
+	ProductStats model.ProductStats `json:"product_stats"`
+}
 
 func (s *productsServiceImpl) GetProductStats(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *productsServiceImpl) GetProductStats(
 
 	path := fmt.Sprintf("/products/%s/stats", request.ProductId)
 
-	response := &GetProductStatsResponse{}
+	var productStats model.ProductStats
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&productStats,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductStatsResponse{ProductStats: productStats}, nil
 }

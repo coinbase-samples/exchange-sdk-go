@@ -2,23 +2,21 @@ package test
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/coinbase-samples/exchange-sdk-go/accounts"
-	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/coinbaseaccounts"
-	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"github.com/coinbase-samples/exchange-sdk-go/profiles"
-	"os"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/coinbase-samples/core-go"
+	"github.com/coinbase-samples/exchange-sdk-go/client"
+	"github.com/coinbase-samples/exchange-sdk-go/coinbaseaccounts"
+	"github.com/coinbase-samples/exchange-sdk-go/credentials"
+	"github.com/coinbase-samples/exchange-sdk-go/profiles"
 )
 
 func TestCreateCryptoAddress(t *testing.T) {
-	creds := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), creds); err != nil {
-		t.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()
@@ -26,42 +24,41 @@ func TestCreateCryptoAddress(t *testing.T) {
 		t.Fatalf("unable to load default http client: %v", err)
 	}
 
-	client := client.NewRestClient(creds, httpClient)
+	client := client.NewRestClient(credentials, httpClient)
 	profilesSvc := profiles.NewProfilesService(client)
-	accountsSvc := accounts.NewAccountsService(client)
 	coinbaseAccountsSvc := coinbaseaccounts.NewCoinbaseAccountsService(client)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	profilesResponse, err := profilesSvc.ListProfiles(ctx, &profiles.ListProfilesRequest{Active: "true"})
+	profilesResponse, err := profilesSvc.ListProfiles(ctx, &profiles.ListProfilesRequest{})
 	if err != nil {
 		t.Fatalf("error fetching profiles: %v", err)
 	}
-	if profilesResponse == nil || len(*profilesResponse) == 0 {
+	if profilesResponse == nil || len(profilesResponse.Profiles) == 0 {
 		t.Fatal("expected non-empty profiles response")
 	}
-	profileId := (*profilesResponse)[0].Id
+	profileId := profilesResponse.Profiles[0].Id
 
-	accountsResponse, err := accountsSvc.ListAccounts(ctx, &accounts.ListAccountsRequest{})
+	coinbaseAccountsResponse, err := coinbaseAccountsSvc.ListCoinbaseWallets(ctx, &coinbaseaccounts.ListCoinbaseWalletsRequest{})
 	if err != nil {
 		t.Fatalf("error fetching accounts: %v", err)
 	}
-	var accountId string
-	for _, account := range *accountsResponse {
-		if account.Currency == "BTC" {
-			accountId = account.Id
+	var coinbaseWalletId string
+	for _, coinbase_wallets := range coinbaseAccountsResponse.CoinbaseWallets {
+		if coinbase_wallets.Name == "BTC Wallet" {
+			coinbaseWalletId = coinbase_wallets.Id
 			break
 		}
 	}
-	if accountId == "" {
+	if coinbaseWalletId == "" {
 		t.Fatal("BTC account not found")
 	}
 
 	request := &coinbaseaccounts.CreateCryptoAddressRequest{
-		AccountId: accountId,
+		AccountId: coinbaseWalletId,
 		ProfileId: profileId,
-		Network:   "BTC",
+		Network:   "bitcoin",
 	}
 	response, err := coinbaseAccountsSvc.CreateCryptoAddress(ctx, request)
 	if err != nil {
@@ -72,15 +69,16 @@ func TestCreateCryptoAddress(t *testing.T) {
 		t.Fatal("expected non-nil response")
 	}
 
-	if response.Id == "" {
+	cryptoAddress := response.CryptoAddress
+	if cryptoAddress.Id == "" {
 		t.Fatal("expected crypto address ID to be set")
 	}
 
-	if response.Address == "" {
+	if cryptoAddress.Address == "" {
 		t.Fatal("expected crypto address field to be set")
 	}
 
-	if response.Network != "BTC" {
-		t.Fatalf("expected network to be BTC, got %v", response.Network)
+	if cryptoAddress.Network != "bitcoin" {
+		t.Fatalf("expected network to be bitcoin, got %v", cryptoAddress.Network)
 	}
 }

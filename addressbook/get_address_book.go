@@ -26,7 +26,9 @@ import (
 type GetAddressBookRequest struct {
 }
 
-type GetAddressBookResponse []*model.AddressBook
+type GetAddressBookResponse struct {
+	AddressBooks []*model.AddressBook `json:"address_books"`
+}
 
 func (s *addressBookServiceImpl) GetAddressBook(
 	ctx context.Context,
@@ -35,11 +37,20 @@ func (s *addressBookServiceImpl) GetAddressBook(
 
 	path := "/address-book"
 
-	response := &GetAddressBookResponse{}
+	var addressBooks []*model.AddressBook
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&addressBooks,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetAddressBookResponse{AddressBooks: addressBooks}, nil
 }

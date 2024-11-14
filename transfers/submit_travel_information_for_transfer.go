@@ -31,7 +31,9 @@ type SubmitTravelInformationForTransferRequest struct {
 	Currency          string `json:"currency"`
 }
 
-type SubmitTravelInformationForTransferResponse model.Message
+type SubmitTravelInformationForTransferResponse struct {
+	Message model.Message `json:"message"`
+}
 
 func (s *transfersServiceImpl) SubmitTravelInformationForTransfer(
 	ctx context.Context,
@@ -40,11 +42,20 @@ func (s *transfersServiceImpl) SubmitTravelInformationForTransfer(
 
 	path := fmt.Sprintf("/transfers/%s/travel-rules", request.TransferId)
 
-	response := &SubmitTravelInformationForTransferResponse{}
+	var message model.Message
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&message,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &SubmitTravelInformationForTransferResponse{Message: message}, nil
 }

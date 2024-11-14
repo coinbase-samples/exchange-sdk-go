@@ -28,7 +28,9 @@ type GetAccountRequest struct {
 	AccountId string `json:"account"`
 }
 
-type GetAccountResponse model.Account
+type GetAccountResponse struct {
+	Account model.Account `json:"account"`
+}
 
 func (s *accountsServiceImpl) GetAccount(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *accountsServiceImpl) GetAccount(
 
 	path := fmt.Sprintf("/accounts/%s", request.AccountId)
 
-	response := &GetAccountResponse{}
+	var account model.Account
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&account,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetAccountResponse{Account: account}, nil
 }

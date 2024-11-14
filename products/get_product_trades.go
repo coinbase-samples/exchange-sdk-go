@@ -30,7 +30,9 @@ type GetProductTradesRequest struct {
 	Pagination *model.PaginationParams `json:"pagination_params"`
 }
 
-type GetProductTradesResponse []*model.ProductTrades
+type GetProductTradesResponse struct {
+	ProductTrades []*model.ProductTrades `json:"product_trades"`
+}
 
 func (s *productsServiceImpl) GetProductTrades(
 	ctx context.Context,
@@ -41,11 +43,20 @@ func (s *productsServiceImpl) GetProductTrades(
 
 	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
 
-	response := &GetProductTradesResponse{}
+	var productTrades []*model.ProductTrades
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&productTrades,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductTradesResponse{}, nil
 }

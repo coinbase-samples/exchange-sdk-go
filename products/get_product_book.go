@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetProductBookRequest struct {
@@ -30,7 +29,9 @@ type GetProductBookRequest struct {
 	Level     string `json:"level,omitempty"`
 }
 
-type GetProductBookResponse model.ProductBook
+type GetProductBookResponse struct {
+	ProductBook model.ProductBook `json:"product_book"`
+}
 
 func (s *productsServiceImpl) GetProductBook(
 	ctx context.Context,
@@ -41,14 +42,23 @@ func (s *productsServiceImpl) GetProductBook(
 
 	var queryParams string
 	if len(request.Level) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "level", request.Level)
+		queryParams = core.AppendHttpQueryParam(queryParams, "level", request.Level)
 	}
 
-	response := &GetProductBookResponse{}
+	var productBook model.ProductBook
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&productBook,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetProductBookResponse{ProductBook: productBook}, nil
 }

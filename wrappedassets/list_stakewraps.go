@@ -30,7 +30,9 @@ type ListStakewrapsRequest struct {
 	Pagination *model.PaginationParams `json:"pagination,omitempty"`
 }
 
-type ListStakewrapsResponse []*model.StakeWrap
+type ListStakewrapsResponse struct {
+	Stakewraps []*model.Stakewrap `json:"stakewraps"`
+}
 
 func (s *wrappedAssetsServiceImpl) ListStakewraps(
 	ctx context.Context,
@@ -41,20 +43,29 @@ func (s *wrappedAssetsServiceImpl) ListStakewraps(
 
 	var queryParams string
 	if len(request.From) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "from", request.From)
+		queryParams = core.AppendHttpQueryParam(queryParams, "from", request.From)
 	}
 
 	if len(request.To) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "to", request.To)
+		queryParams = core.AppendHttpQueryParam(queryParams, "to", request.To)
 	}
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	response := &ListStakewrapsResponse{}
+	var stakewraps []*model.Stakewrap
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&stakewraps,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListStakewrapsResponse{Stakewraps: stakewraps}, nil
 }

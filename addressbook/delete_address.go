@@ -28,7 +28,7 @@ type DeleteAddressRequest struct {
 }
 
 type DeleteAddressResponse struct {
-	Message string `json:"message,omitempty"`
+	Response string `json:"response,omitempty"`
 }
 
 func (s *addressBookServiceImpl) DeleteAddress(
@@ -38,11 +38,20 @@ func (s *addressBookServiceImpl) DeleteAddress(
 
 	path := fmt.Sprintf("/address-book/%s", request.Id)
 
-	response := &DeleteAddressResponse{}
+	var response string
 
-	if err := core.HttpDelete(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpDelete(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &DeleteAddressResponse{Response: response}, nil
 }

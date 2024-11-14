@@ -31,7 +31,9 @@ type CreateConversionRequest struct {
 	Nonce     string `json:"nonce"`
 }
 
-type CreateConversionResponse model.Conversion
+type CreateConversionResponse struct {
+	Conversion model.Conversion `json:"conversion"`
+}
 
 func (s *conversionsServiceImpl) CreateConversion(
 	ctx context.Context,
@@ -40,11 +42,20 @@ func (s *conversionsServiceImpl) CreateConversion(
 
 	path := "/conversions"
 
-	response := &CreateConversionResponse{}
+	var conversion model.Conversion
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&conversion,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &CreateConversionResponse{Conversion: conversion}, nil
 }

@@ -28,7 +28,9 @@ type GetCurrencyRequest struct {
 	CurrencyId string `json:"currency_id"`
 }
 
-type GetCurrencyResponse model.Currency
+type GetCurrencyResponse struct {
+	Currency model.Currency `json:"currency"`
+}
 
 func (s *currenciesServiceImpl) GetCurrency(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *currenciesServiceImpl) GetCurrency(
 
 	path := fmt.Sprintf("/currencies/%s", request.CurrencyId)
 
-	response := &GetCurrencyResponse{}
+	var currency model.Currency
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&currency,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetCurrencyResponse{Currency: currency}, nil
 }

@@ -30,6 +30,7 @@ type TransferFundsBetweenProfilesRequest struct {
 }
 
 type TransferFundsBetweenProfilesResponse struct {
+	Response string `json:"response,omitempty"`
 }
 
 func (s *profilesServiceImpl) TransferFundsBetweenProfiles(
@@ -39,11 +40,20 @@ func (s *profilesServiceImpl) TransferFundsBetweenProfiles(
 
 	path := "/profiles/transfer"
 
-	response := &TransferFundsBetweenProfilesResponse{}
+	var response string
 
-	if err := core.HttpPost(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpPost(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&response,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &TransferFundsBetweenProfilesResponse{Response: response}, nil
 }

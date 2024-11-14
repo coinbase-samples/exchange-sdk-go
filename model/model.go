@@ -94,7 +94,7 @@ type AddressBook struct {
 	VaspId                     *string `json:"vasp_id,omitempty"`
 }
 
-type Address struct {
+type AddressSummary struct {
 	Currency                   string  `json:"currency"`
 	To                         To      `json:"to"`
 	Label                      string  `json:"label"`
@@ -107,7 +107,7 @@ type To struct {
 	DestinationTag *string `json:"destination_tag,omitempty"`
 }
 
-type AddressBookResponse struct {
+type AddressBookEntry struct {
 	Id                  string      `json:"id"`
 	Address             string      `json:"address"`
 	AddressInfo         AddressInfo `json:"address_info"`
@@ -152,7 +152,7 @@ type Warning struct {
 	ImageUrl string `json:"image_url"`
 }
 
-type AddressResponse struct {
+type Address struct {
 	Id                     string      `json:"id"`
 	Address                string      `json:"address"`
 	AddressInfo            AddressInfo `json:"address_info"`
@@ -367,7 +367,7 @@ type WrappedAsset struct {
 	Apy               string `json:"apy"`
 }
 
-type StakeWrap struct {
+type Stakewrap struct {
 	Id             string    `json:"id"`
 	FromAmount     string    `json:"from_amount"`
 	ToAmount       string    `json:"to_amount"`
@@ -433,7 +433,7 @@ type TradingVolume struct {
 	IndividualData IndividualData `json:"individual_data"`
 }
 
-type TravelRuleResponse struct {
+type TravelRule struct {
 	Id                TravelRuleDetail   `json:"id"`
 	CreatedAt         TravelRuleCreation `json:"created_at"`
 	Address           TravelRuleDetail   `json:"address"`
@@ -724,7 +724,7 @@ type WithdrawalInformation struct {
 	TravelRuleData                  *TravelRuleData `json:"travel_rule_data,omitempty"`
 	TransferPurpose                 string          `json:"transfer_purpose,omitempty"`
 	BeneficiaryName                 string          `json:"beneficiary_name,omitempty"`
-	BeneficiaryAddress              *Address        `json:"beneficiary_address,omitempty"`
+	BeneficiaryAddress              *AddressSummary `json:"beneficiary_address,omitempty"`
 	BeneficiaryTelephoneNumber      string          `json:"beneficiary_telephone_number,omitempty"`
 	BeneficiaryAccountLocation      string          `json:"beneficiary_account_location,omitempty"`
 	BeneficiaryDateOfBirth          *DateOfBirth    `json:"beneficiary_date_of_birth,omitempty"`
@@ -806,7 +806,7 @@ type RfqFillsParams struct {
 	ProductId string `json:"product_id,omitempty"`
 }
 
-type ReportResponse struct {
+type ReportSummary struct {
 	Id     string `json:"id"`
 	Type   string `json:"type"`
 	Status string `json:"status"`

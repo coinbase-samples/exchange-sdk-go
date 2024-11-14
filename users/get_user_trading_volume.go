@@ -28,7 +28,9 @@ type GetUserTradingVolumeRequest struct {
 	UserId string `json:"user_id"`
 }
 
-type GetUserTradingVolumeResponse model.TradingVolume
+type GetUserTradingVolumeResponse struct {
+	TradingVolume model.TradingVolume `json:"trading_volume"`
+}
 
 func (s *usersServiceImpl) GetUserTradingVolume(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *usersServiceImpl) GetUserTradingVolume(
 
 	path := fmt.Sprintf("/users/%s/trading-volumes", request.UserId)
 
-	response := &GetUserTradingVolumeResponse{}
+	var tradingVolume model.TradingVolume
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&tradingVolume,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetUserTradingVolumeResponse{TradingVolume: tradingVolume}, nil
 }

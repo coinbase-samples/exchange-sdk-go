@@ -21,14 +21,16 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
+	"strings"
 )
 
 type ListLoansRequest struct {
-	Ids string `json:"ids,omitempty"`
+	Ids []string `json:"ids,omitempty"`
 }
 
-type ListLoansResponse []*model.Loan
+type ListLoansResponse struct {
+	Loans []*model.Loan `json:"loans"`
+}
 
 func (s *loansServiceImpl) ListLoans(
 	ctx context.Context,
@@ -39,14 +41,24 @@ func (s *loansServiceImpl) ListLoans(
 
 	var queryParams string
 	if len(request.Ids) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "ids", request.Ids)
+		ids := strings.Join(request.Ids, ",")
+		queryParams = core.AppendHttpQueryParam(queryParams, "ids", ids)
 	}
 
-	response := &ListLoansResponse{}
+	var loans []*model.Loan
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&loans,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListLoansResponse{Loans: loans}, nil
 }

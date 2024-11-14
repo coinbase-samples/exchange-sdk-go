@@ -28,7 +28,9 @@ type GetReportRequest struct {
 	ReportId string `json:"report_id"`
 }
 
-type GetReportResponse model.Report
+type GetReportResponse struct {
+	Report model.Report `json:"report"`
+}
 
 func (s *reportsServiceImpl) GetReport(
 	ctx context.Context,
@@ -37,11 +39,20 @@ func (s *reportsServiceImpl) GetReport(
 
 	path := fmt.Sprintf("/reports/%s", request.ReportId)
 
-	response := &GetReportResponse{}
+	var report model.Report
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&report,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetReportResponse{Report: report}, nil
 }

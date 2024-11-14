@@ -2,21 +2,20 @@ package test
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/coinbase-samples/exchange-sdk-go/addressbook"
-	"github.com/coinbase-samples/exchange-sdk-go/client"
-	"github.com/coinbase-samples/exchange-sdk-go/credentials"
-	"os"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/coinbase-samples/core-go"
+	"github.com/coinbase-samples/exchange-sdk-go/addressbook"
+	"github.com/coinbase-samples/exchange-sdk-go/client"
+	"github.com/coinbase-samples/exchange-sdk-go/credentials"
 )
 
 func TestGetAddressBook(t *testing.T) {
-	creds := &credentials.Credentials{}
-	if err := json.Unmarshal([]byte(os.Getenv("EXCHANGE_CREDENTIALS")), creds); err != nil {
-		t.Fatalf("unable to deserialize exchange credentials JSON: %v", err)
+	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
+	if err != nil {
+		panic(fmt.Sprintf("unable to read exchange credentials: %v", err))
 	}
 
 	httpClient, err := core.DefaultHttpClient()
@@ -24,7 +23,7 @@ func TestGetAddressBook(t *testing.T) {
 		t.Fatalf("unable to load default http client: %v", err)
 	}
 
-	client := client.NewRestClient(creds, httpClient)
+	client := client.NewRestClient(credentials, httpClient)
 	addressBookSvc := addressbook.NewAddressBookService(client)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -40,11 +39,11 @@ func TestGetAddressBook(t *testing.T) {
 		t.Fatal("expected non-nil response")
 	}
 
-	if len(*response) == 0 {
-		t.Fatal("expected addresses in get address book")
+	if len(response.AddressBooks) == 0 {
+		t.Fatal("expected at least one address book entry in response")
 	}
 
-	firstEntry := (*response)[0]
+	firstEntry := response.AddressBooks[0]
 	if firstEntry.Id == "" {
 		t.Fatal("expected address book entry ID to be set")
 	}

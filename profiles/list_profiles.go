@@ -21,14 +21,15 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type ListProfilesRequest struct {
 	Active string `json:"active,omitempty"`
 }
 
-type ListProfilesResponse []*model.Profile
+type ListProfilesResponse struct {
+	Profiles []*model.Profile `json:"profiles"`
+}
 
 func (s *profilesServiceImpl) ListProfiles(
 	ctx context.Context,
@@ -39,14 +40,23 @@ func (s *profilesServiceImpl) ListProfiles(
 
 	var queryParams string
 	if len(request.Active) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "active", request.Active)
+		queryParams = core.AppendHttpQueryParam(queryParams, "active", request.Active)
 	}
 
-	response := &ListProfilesResponse{}
+	var profiles []*model.Profile
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&profiles,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListProfilesResponse{Profiles: profiles}, nil
 }

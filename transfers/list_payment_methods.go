@@ -25,7 +25,9 @@ import (
 
 type ListPaymentMethodsRequest struct{}
 
-type ListPaymentMethodsResponse []*model.PaymentMethod
+type ListPaymentMethodsResponse struct {
+	PaymentMethods []*model.PaymentMethod `json:"payment_methods"`
+}
 
 func (s *transfersServiceImpl) ListPaymentMethods(
 	ctx context.Context,
@@ -34,11 +36,20 @@ func (s *transfersServiceImpl) ListPaymentMethods(
 
 	path := "/payment-methods"
 
-	response := &ListPaymentMethodsResponse{}
+	var paymentMethods []*model.PaymentMethod
 
-	if err := core.HttpGet(ctx, s.client, path, core.EmptyQueryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		core.EmptyQueryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&paymentMethods,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListPaymentMethodsResponse{PaymentMethods: paymentMethods}, nil
 }

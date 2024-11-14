@@ -33,7 +33,9 @@ type ListFillsRequest struct {
 	Pagination *model.PaginationParams `json:"pagination,omitempty"`
 }
 
-type ListFillsResponse []*model.Fill
+type ListFillsResponse struct {
+	Fills []*model.Fill `json:"fills"`
+}
 
 func (s *ordersServiceImpl) ListFills(
 	ctx context.Context,
@@ -44,32 +46,41 @@ func (s *ordersServiceImpl) ListFills(
 
 	var queryParams string
 	if len(request.OrderId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "order_id", request.OrderId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "order_id", request.OrderId)
 	}
 
 	if len(request.ProductId) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "product_id", request.ProductId)
+		queryParams = core.AppendHttpQueryParam(queryParams, "product_id", request.ProductId)
 	}
 
 	if len(request.MarketType) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "market_type", request.MarketType)
+		queryParams = core.AppendHttpQueryParam(queryParams, "market_type", request.MarketType)
 	}
 
 	if len(request.StartDate) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "start_date", request.StartDate)
+		queryParams = core.AppendHttpQueryParam(queryParams, "start_date", request.StartDate)
 	}
 
 	if len(request.EndDate) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "end_date", request.EndDate)
+		queryParams = core.AppendHttpQueryParam(queryParams, "end_date", request.EndDate)
 	}
 
 	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
-	response := &ListFillsResponse{}
+	var fills []*model.Fill
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&fills,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &ListFillsResponse{Fills: fills}, nil
 }

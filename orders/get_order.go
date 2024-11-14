@@ -22,7 +22,6 @@ import (
 	"github.com/coinbase-samples/core-go"
 	"github.com/coinbase-samples/exchange-sdk-go/client"
 	"github.com/coinbase-samples/exchange-sdk-go/model"
-	"github.com/coinbase-samples/exchange-sdk-go/utils"
 )
 
 type GetOrderRequest struct {
@@ -30,7 +29,9 @@ type GetOrderRequest struct {
 	MarketType string `json:"market_type,omitempty"`
 }
 
-type GetOrderResponse model.Order
+type GetOrderResponse struct {
+	Order model.Order `json:"order"`
+}
 
 func (s *ordersServiceImpl) GetOrder(
 	ctx context.Context,
@@ -41,14 +42,23 @@ func (s *ordersServiceImpl) GetOrder(
 
 	var queryParams string
 	if len(request.MarketType) > 0 {
-		queryParams = utils.AppendQueryParam(queryParams, "market_type", request.MarketType)
+		queryParams = core.AppendHttpQueryParam(queryParams, "market_type", request.MarketType)
 	}
 
-	response := &GetOrderResponse{}
+	var order model.Order
 
-	if err := core.HttpGet(ctx, s.client, path, queryParams, client.DefaultSuccessHttpStatusCodes, request, response, s.client.HeadersFunc()); err != nil {
+	if err := core.HttpGet(
+		ctx,
+		s.client,
+		path,
+		queryParams,
+		client.DefaultSuccessHttpStatusCodes,
+		request,
+		&order,
+		s.client.HeadersFunc(),
+	); err != nil {
 		return nil, err
 	}
 
-	return response, nil
+	return &GetOrderResponse{Order: order}, nil
 }
