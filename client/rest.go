@@ -94,6 +94,11 @@ func NewRestClient(credentials *credentials.Credentials, httpClient http.Client)
 
 func AddExchangeHeaders(req *http.Request, path string, body []byte, client core.RestClient, t time.Time) {
 	c := client.(*restClientImpl)
+
+	if len(req.URL.RawQuery) > 0 {
+		path += "?" + req.URL.RawQuery
+	}
+
 	signature := sign(req.Method, path, t.Unix(), c.Credentials().SigningKey, body)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("CB-ACCESS-KEY", c.Credentials().ApiKey)
@@ -101,7 +106,6 @@ func AddExchangeHeaders(req *http.Request, path string, body []byte, client core
 	req.Header.Add("CB-ACCESS-SIGN", signature)
 	req.Header.Add("CB-ACCESS-TIMESTAMP", strconv.FormatInt(t.Unix(), 10))
 	req.Header.Add("Content-Type", "application/json")
-
 }
 
 func sign(method, path string, t int64, signingKey string, body []byte) string {
