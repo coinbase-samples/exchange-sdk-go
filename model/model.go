@@ -72,7 +72,7 @@ type AccountTransfer struct {
 	ProcessedAt *string            `json:"processed_at,omitempty"`
 	Amount      string             `json:"amount"`
 	Details     TransactionDetails `json:"details"`
-	UserNonce   *int64             `json:"user_nonce,omitempty"`
+	UserNonce   *string            `json:"user_nonce,omitempty"`
 	Currency    string             `json:"currency"`
 }
 
