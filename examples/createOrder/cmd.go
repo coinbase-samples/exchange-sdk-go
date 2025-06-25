@@ -31,7 +31,6 @@ import (
 )
 
 func main() {
-
 	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
 	if err != nil {
 		log.Fatalf("unable to read credentials from environment: %v", err)
@@ -45,17 +44,21 @@ func main() {
 	client := client.NewRestClient(credentials, httpClient)
 
 	if len(os.Args) < 7 {
-		log.Fatalf("usage: %s <type> <side> <product_id> <stp> <price> <size> <time_in_force>", os.Args[0])
-		log.Fatalf("note: price is only required when type is not 'market'")
+		log.Fatalf("usage: %s <type> <side> <product_id> <stp> <size> <time_in_force> [price]", os.Args[0])
+		log.Fatalf("note: price is optional for market orders, required for other order types")
 	}
 
 	orderType := os.Args[1]
 	side := os.Args[2]
 	productId := os.Args[3]
 	stp := os.Args[4]
-	price := os.Args[5]
-	size := os.Args[6]
-	timeInForce := os.Args[7]
+	size := os.Args[5]
+	timeInForce := os.Args[6]
+
+	var price string
+	if len(os.Args) > 7 {
+		price = os.Args[7]
+	}
 
 	if strings.ToLower(orderType) != "market" && price == "" {
 		log.Fatalf("price is required when order type is not 'market'")

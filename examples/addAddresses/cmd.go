@@ -31,7 +31,6 @@ import (
 )
 
 func main() {
-
 	credentials, err := credentials.ReadEnvCredentials("EXCHANGE_CREDENTIALS")
 	if err != nil {
 		log.Fatalf("unable to read credentials from environment: %v", err)
