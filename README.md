@@ -49,6 +49,14 @@ After adding this line, run `source ~/.zshrc` to load the environment variable i
 
 Coinbase Exchange API credentials can be created in the Exchange web console under Settings -> APIs.
 
+### Using Sandbox Environment
+
+To use the sandbox environment instead of production, set the `EXCHANGE_BASE_URL` environment variable:
+
+```
+export EXCHANGE_BASE_URL="https://api-public.sandbox.exchange.coinbase.com"
+```
+
 ## Accessing the API
 
 After initializing the client, you need to set up the appropriate service to access specific API endpoints. For example, to [list accounts](accounts/list_accounts.go), initialize the accounts service, pass in the request object, check for an error, and, if nil, process the response.
@@ -79,4 +87,16 @@ To build the sample library, ensure that [Go](https://go.dev/) 1.19+ is installe
 
 ```bash
 go build ./...
+```
+
+### Running Examples
+
+The SDK includes various examples that can be run with `go run`. Some examples require additional arguments:
+
+```bash
+go run examples/listProfiles/cmd.go
+```
+
+```bash
+go run examples/convertCurrency/cmd.go <profile_id> <from_currency> <to_currency> <amount>
 ```
