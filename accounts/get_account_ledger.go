@@ -43,7 +43,16 @@ func (s *accountsServiceImpl) GetAccountLedger(
 
 	path := fmt.Sprintf("/accounts/%s/ledger", request.AccountId)
 
-	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
+	var queryParams string
+
+	if request.StartDate != "" {
+		queryParams = core.AppendHttpQueryParam(queryParams, "start_date", request.StartDate)
+	}
+	if request.EndDate != "" {
+		queryParams = core.AppendHttpQueryParam(queryParams, "end_date", request.EndDate)
+	}
+
+	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	var accountLedgers []*model.AccountLedger
 

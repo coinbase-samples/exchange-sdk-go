@@ -42,7 +42,12 @@ func (s *accountsServiceImpl) GetAccountTransfers(
 
 	path := fmt.Sprintf("/accounts/%s/transfers", request.AccountId)
 
-	queryParams := utils.AppendPaginationParams(core.EmptyQueryParams, request.Pagination)
+	var queryParams string
+	if len(request.Type) > 0 {
+		queryParams = core.AppendHttpQueryParam(queryParams, "type", request.Type)
+	}
+
+	queryParams = utils.AppendPaginationParams(queryParams, request.Pagination)
 
 	var accountTransfers []*model.AccountTransfer
 
